@@ -10,8 +10,6 @@ Total stars across owned repositories scanned: **1,867** ⭐
 
 ![fabriziosalmi's GitHub trophy](https://github-profile-trophy.vercel.app/?username=fabriziosalmi)
 
-## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=fabriziosalmi/caddy-waf,fabriziosalmi/patterns,fabriziosalmi/UglyFeed,fabriziosalmi/proxmox-vm-autoscale,fabriziosalmi/proxmox-lxc-autoscale,fabriziosalmi/DevGPT,fabriziosalmi/lws,fabriziosalmi/websites-monitor,fabriziosalmi/caddy-mib,fabriziosalmi/iamnotacoder&type=Date&theme=dark)](https://star-history.com/#fabriziosalmi/caddy-waf&fabriziosalmi/patterns&fabriziosalmi/UglyFeed&fabriziosalmi/proxmox-vm-autoscale&fabriziosalmi/proxmox-lxc-autoscale&fabriziosalmi/DevGPT&fabriziosalmi/lws&fabriziosalmi/websites-monitor&fabriziosalmi/caddy-mib&fabriziosalmi/iamnotacoder&Date)
 
 
