@@ -1,5 +1,9 @@
 name: Update README
 
+# This workflow automatically updates the README.md file daily at 2:00 AM UTC
+# by cloning it from the fabriziosalmi/repos repository.
+# It can also be triggered manually using the "Run workflow" button in GitHub Actions.
+
 on:
   schedule:
     # Run daily at 2:00 AM UTC
