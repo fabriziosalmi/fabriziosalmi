@@ -31,7 +31,7 @@ My repositories are not isolated scripts. They are modules of a larger vision: *
 
 #### 🛡️ DEFENSE (Active Security & WAF)
 *Building the shield against the noise of the internet.*
-*   **[caddy-waf](https://github.com/fabriziosalmi/caddy-waf):** 🌟 High-performance WAF middleware for Caddy (Go). Regex rules, IP/DNS filtering, and anomaly detection.
+*   **[caddy-waf](https://github.com/fabriziosalmi/caddy-waf):** High-performance WAF middleware for Caddy (Go). Regex rules, IP/DNS filtering, and anomaly detection.
 *   **[wildbox](https://github.com/fabriziosalmi/wildbox):** The Endgame. An open-source unified security platform (SIEM/SOAR/WAF) for self-hosted sovereignty.
 *   **[certmate](https://github.com/fabriziosalmi/certmate):** Enterprise-grade SSL certificate management automation. Zero-downtime renewals across multiple DNS providers.
 *   **[secbeat](https://github.com/fabriziosalmi/secbeat):** Rust-based DDoS protection layer targeting L4/L7 attacks.
