@@ -1,6 +1,5 @@
 <div align="center">
   <h1>Fabrizio Salmi</h1>
-  <h3>Architect of Resilient Systems & Sovereign Infrastructure</h3>
   
   <p>
     <a href="https://www.linkedin.com/in/fabriziosalmi/">
