@@ -39,7 +39,6 @@ My repositories are not isolated scripts. They are modules of a larger vision: *
 #### 🧠 INTELLIGENCE (AI Ops & Agents)
 *Teaching machines to understand intent, not just commands.*
 *   **[ALMA](https://github.com/fabriziosalmi/alma):** *Infrastructure as Conversation.* A cognitive engine that manages servers via natural language, featuring risk assessment and adaptive personas.
-*   **[nanocoder](https://github.com/fabriziosalmi/nanocoder):** A local-first AI coding agent that runs in your terminal.
 *   **[silence](https://github.com/fabriziosalmi/silence):** An energy-efficient AI inference router that knows *when* to use a large model and when to use simple logic.
 
 #### 🏗️ STRUCTURE (Orchestration & Infra)
