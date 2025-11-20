@@ -33,19 +33,22 @@ My repositories are not isolated scripts. They are modules of a larger vision: *
 *Building the shield against the noise of the internet.*
 *   **[caddy-waf](https://github.com/fabriziosalmi/caddy-waf):** 🌟 High-performance WAF middleware for Caddy (Go). Regex rules, IP/DNS filtering, and anomaly detection.
 *   **[wildbox](https://github.com/fabriziosalmi/wildbox):** The Endgame. An open-source unified security platform (SIEM/SOAR/WAF) for self-hosted sovereignty.
+*   **[certmate](https://github.com/fabriziosalmi/certmate):** Enterprise-grade SSL certificate management automation. Zero-downtime renewals across multiple DNS providers.
 *   **[secbeat](https://github.com/fabriziosalmi/secbeat):** Rust-based DDoS protection layer targeting L4/L7 attacks.
-*   **[blacklists](https://github.com/fabriziosalmi/blacklists):** Hourly updated domain blocklists.
+*   **[blacklists](https://github.com/fabriziosalmi/blacklists):** Hourly updated domain blocklists protecting millions of users.
 
 #### 🧠 INTELLIGENCE (AI Ops & Agents)
 *Teaching machines to understand intent, not just commands.*
 *   **[Navigator](https://github.com/fabriziosalmi/navigator):** *The Sentient Interface SDK*. Navigate the web with gesture, voice, and predictive AI.
 *   **[ALMA](https://github.com/fabriziosalmi/alma):** *Infrastructure as Conversation.* A cognitive engine that manages servers via natural language, featuring risk assessment and adaptive personas.
+*   **[nanocoder](https://github.com/fabriziosalmi/nanocoder):** A local-first AI coding agent that runs in your terminal.
 *   **[silence](https://github.com/fabriziosalmi/silence):** An energy-efficient AI inference router that knows *when* to use a large model and when to use simple logic.
 
 #### 🏗️ STRUCTURE (Orchestration & Infra)
 *Managing the metal that powers the mind.*
+*   **[synapse-ng](https://github.com/fabriziosalmi/synapse-ng):** A decentralized, scalable digital organism built on WebRTC and P2P principles. Self-healing network infrastructure.
 *   **[lws](https://github.com/fabriziosalmi/lws):** A unified CLI for Proxmox, LXC, and Docker management. The "AWS CLI" for your homelab.
-*   **[proxmox-vm-autoscale](https://github.com/fabriziosalmi/proxmox-vm-autoscale) and [proxmox-lxc-autoscale](https://github.com/fabriziosalmi/proxmox-lxc-autoscale):** Intelligent resource scaling for Proxmox environments.
+*   **[proxmox-vm-autoscale](https://github.com/fabriziosalmi/proxmox-vm-autoscale) & [lxc-autoscale](https://github.com/fabriziosalmi/proxmox-lxc-autoscale):** Intelligent resource scaling for Proxmox environments.
 
 #### 🏛️ ECONOMY & GOVERNANCE
 *Codifying trust and value.*
