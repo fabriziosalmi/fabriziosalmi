@@ -1,373 +1,80 @@
 <div align="center">
-
-# 📊 GitHub Repository Analytics Dashboard
-
-### Advanced Analytics & Insights for GitHub Repositories
-
-[![Live Dashboard](https://img.shields.io/badge/🚀_Live-Dashboard-blue?style=for-the-badge)](https://fabriziosalmi.github.io/repos/)
-[![GitHub Stars](https://img.shields.io/github/stars/fabriziosalmi/repos?style=for-the-badge&logo=github)](https://github.com/fabriziosalmi/repos/stargazers)
-[![License](https://img.shields.io/github/license/fabriziosalmi/repos?style=for-the-badge)](LICENSE)
-[![Last Update](https://img.shields.io/github/last-commit/fabriziosalmi/repos?style=for-the-badge)](https://github.com/fabriziosalmi/repos/commits)
-
-**[🌐 View Live Dashboard](https://fabriziosalmi.github.io/repos/)** • **[🚀 Quick Start](TUTORIAL.md)** • **[📖 Documentation](SETUP.md)** • **[📊 Detailed Stats](docs/STATS.md)** • **[✨ Features](FEATURES.md)**
+  <h1>Fabrizio Salmi</h1>
+  <h3>Architect of Resilient Systems & Sovereign Infrastructure</h3>
+  
+  <p>
+    <a href="https://www.linkedin.com/in/fabriziosalmi/">
+      <img src="https://img.shields.io/badge/LinkedIn-Connect-0077B5?style=for-the-badge&logo=linkedin" alt="LinkedIn"/>
+    </a>
+    <a href="https://github.com/sponsors/fabriziosalmi">
+      <img src="https://img.shields.io/badge/Sponsor-Support_My_R%26D-pink?style=for-the-badge&logo=github-sponsors" alt="Sponsor"/>
+    </a>
+    <a href="https://audiolibri.org">
+      <img src="https://img.shields.io/badge/Public_Service-Audiolibri.org-green?style=for-the-badge" alt="Audiolibri"/>
+    </a>
+  </p>
+</div>
 
 ---
 
-## 📈 Live Statistics
+### ⚡ "I am not a coder."
+
+I am a **Systems Architect** and **Security Engineer** who uses code to enforce logic, safety, and efficiency upon chaos.
+
+My work bridges the gap between **Infrastructure** (Metal/Cloud), **Cybersecurity** (Defense/Offense), and **Artificial Intelligence** (Reasoning/Agency). I don't just build software; I build **autonomous ecosystems** that protect, manage, and heal themselves.
+
+---
+
+### 🔭 The Ecosystem
+
+My repositories are not isolated scripts. They are modules of a larger vision: **The Sovereign Personal Infrastructure**.
+
+#### 🛡️ DEFENSE (Active Security & WAF)
+*Building the shield against the noise of the internet.*
+*   **[caddy-waf](https://github.com/fabriziosalmi/caddy-waf):** 🌟 High-performance WAF middleware for Caddy (Go). Regex rules, IP/DNS filtering, and anomaly detection.
+*   **[wildbox](https://github.com/fabriziosalmi/wildbox):** The Endgame. An open-source unified security platform (SIEM/SOAR/WAF) for self-hosted sovereignty.
+*   **[secbeat](https://github.com/fabriziosalmi/secbeat):** Rust-based DDoS protection layer targeting L4/L7 attacks.
+*   **[blacklists](https://github.com/fabriziosalmi/blacklists):** Hourly updated domain blocklists protecting millions of users.
+
+#### 🧠 INTELLIGENCE (AI Ops & Agents)
+*Teaching machines to understand intent, not just commands.*
+*   **[ALMA](https://github.com/fabriziosalmi/alma):** *Infrastructure as Conversation.* A cognitive engine that manages servers via natural language, featuring risk assessment and adaptive personas.
+*   **[nanocoder](https://github.com/fabriziosalmi/nanocoder):** A local-first AI coding agent that runs in your terminal.
+*   **[silence](https://github.com/fabriziosalmi/silence):** An energy-efficient AI inference router that knows *when* to use a large model and when to use simple logic.
+
+#### 🏗️ STRUCTURE (Orchestration & Infra)
+*Managing the metal that powers the mind.*
+*   **[lws](https://github.com/fabriziosalmi/lws):** A unified CLI for Proxmox, LXC, and Docker management. The "AWS CLI" for your homelab.
+*   **[proxmox-vm-autoscale](https://github.com/fabriziosalmi/proxmox-vm-autoscale):** Intelligent resource scaling for Proxmox environments.
+
+#### 🏛️ ECONOMY & GOVERNANCE
+*Codifying trust and value.*
+*   **[TAM](https://github.com/fabriziosalmi/tam):** *Temporary Autonomous Monetization.* A DeFi protocol exploring velocity-based staking and reputation-weighted governance.
+
+---
+
+### 🔮 Current Research: "Layer0"
+
+I am currently exploring the concept of **Transient Software**.
+Moving beyond static installations towards software that is **generated on-demand** by local AI, executed in ephemeral micro-VMs, and destroyed immediately after use.
+*Goal: Zero Trust, Zero Footprint, Maximum Resilience.*
+
+---
+
+### 📊 The Metrics
 
 <div align="center">
-
-![Total Repos](https://img.shields.io/badge/Total_Repos-88-blue?style=flat-square)
-![Total Stars](https://img.shields.io/badge/Total_Stars-3,347-yellow?style=flat-square)
-![Total Forks](https://img.shields.io/badge/Total_Forks-230-green?style=flat-square)
-![Total Commits](https://img.shields.io/badge/Total_Commits-16,415-purple?style=flat-square)
-![Contributors](https://img.shields.io/badge/Contributors-453-brightgreen?style=flat-square)
-![Issues Resolved](https://img.shields.io/badge/Issues_Resolved-57-green?style=flat-square)
-![Resolution Rate](https://img.shields.io/badge/Resolution_Rate-54.8%25-brightgreen?style=flat-square)
-
-**🏆 Most Starred: certmate (898 ⭐) | 💻 Top Language: Python (43 repos) | 📊 Avg: 38.0★ / 186.5 commits**
-
-</div>
-
+  <img src="https://github-readme-stats.vercel.app/api?username=fabriziosalmi&show_icons=true&theme=radical&count_private=true&include_all_commits=true" alt="Fabrizio's Github Stats" />
+  <br/>
+  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=fabriziosalmi&layout=compact&theme=radical&hide=html,css,jupyter%20notebook" alt="Top Languages" />
 </div>
 
 ---
 
-## 🎯 Overview
+### 🤝 Connect & Collaborate
 
-A powerful, privacy-focused analytics dashboard that transforms GitHub repository data into beautiful, interactive visualizations. Built with modern web technologies and automated through GitHub Actions for real-time insights.
+I operate at the intersection of **Enterprise Reliability** (MainStreaming, Borsa Italiana background) and **Creative Innovation**.
 
-### 🌟 Key Highlights
+If you are interested in **Autonomous Infrastructure**, **AI Security**, or **Sovereign Tech**, let's talk.
 
-```
-📦 Total Repositories      🏆 Community Stars      🍴 Total Forks      💻 Languages
-Auto-discovered            Tracked in real-time    Live counting       Full analysis
-```
-
----
-
-## ✨ Features
-
-### 🎨 **Modern, Interactive UI**
-- **Dark Mode Design**: Professional GitHub-themed interface with smooth animations
-- **Responsive Layout**: Perfect experience on desktop, tablet, and mobile
-- **Real-time Search**: Instant repository filtering with debounced search
-- **Advanced Filtering**: Filter by language, status, fork status, and more
-
-### 📊 **Advanced Analytics**
-- **Interactive Charts**: Language distribution, stars comparison, activity timeline, fork analysis
-- **Statistical Insights**: Repository trends, growth metrics, and engagement data
-- **Language Statistics**: Detailed breakdown of technologies used across projects
-- **Activity Tracking**: Repository update frequency and commit patterns
-
-### 🚀 **Performance & Privacy**
-- **Zero Tracking**: No cookies, no analytics, no data collection
-- **Fast Loading**: Optimized assets and lazy loading for instant performance
-- **Cached Data**: Smart caching system to reduce API calls
-- **Progressive Enhancement**: Works even with JavaScript disabled (basic view)
-
-### 🤖 **Automation & CI/CD**
-- **GitHub Actions**: Automated daily updates via scheduled workflows
-- **Auto Deployment**: Automatic build and deploy to GitHub Pages
-- **Data Validation**: Comprehensive validation before publishing
-- **Error Recovery**: Robust error handling and fallback mechanisms
-
----
-
-## 🚀 Quick Start
-
-### Prerequisites
-
-- **Python 3.8+** for data generation
-- **Node.js 18+** (optional, for frontend development)
-- **GitHub Personal Access Token** (for API access)
-
-### 🔧 Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/fabriziosalmi/repos.git
-   cd repos
-   ```
-
-2. **Set up Python environment**
-   ```bash
-   python3 -m venv .venv
-   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-   pip install -r requirements.txt
-   ```
-
-3. **Configure GitHub Token**
-   ```bash
-   export MY_PAT="your_github_personal_access_token"
-   # Or create a .env file with: MY_PAT=your_token_here
-   ```
-
-4. **Generate Data**
-   ```bash
-   python stats.py
-   ```
-   This creates `docs/repositories-data.json` with your repository data.
-
-5. **View the Dashboard**
-   Simply open `docs/index.html` in your browser, or use a local server:
-   ```bash
-   python -m http.server 8000 -d docs
-   # Visit http://localhost:8000
-   ```
-
----
-
-## 🛠️ Development
-
-### Local Development Setup
-
-#### **Backend (Python Data Generator)**
-
-The Python script fetches repository data from GitHub API with advanced caching and validation:
-
-```bash
-# Install dependencies
-pip install -r requirements.txt
-
-# Run with verbose output
-python stats.py --verbose
-
-# Force refresh cache
-python stats.py --no-cache
-
-# Generate specific user stats
-python stats.py --user username
-```
-
-**Key Features:**
-- Smart caching (1-hour default TTL)
-- Rate limit handling with exponential backoff
-- Data validation and integrity checks
-- Detailed progress indicators
-- Backup and recovery mechanisms
-
-#### **Frontend Development**
-
-For UI modifications, the dashboard uses vanilla JavaScript with Chart.js:
-
-```bash
-# Install development server (optional)
-npm install -g live-server
-
-# Run with hot reload
-live-server docs/
-
-# Or use Python
-python -m http.server 8000 -d docs
-```
-
-**Tech Stack:**
-- Pure HTML/CSS/JavaScript (no build step required)
-- Chart.js for data visualization
-- CSS Grid & Flexbox for responsive layout
-- Modern CSS variables for theming
-
----
-
-## 📊 Data Structure
-
-The `repositories-data.json` file contains rich metadata for each repository:
-
-```json
-{
-  "name": "repository-name",
-  "full_name": "user/repository-name",
-  "description": "Repository description",
-  "url": "https://github.com/user/repo",
-  "stars": 100,
-  "forks": 50,
-  "watchers": 100,
-  "language": "Python",
-  "license": "MIT License",
-  "last_update": "2025-11-16T10:00:00Z",
-  "last_update_str": "2 hours ago",
-  "commits": 250,
-  "contributors": 5,
-  "open_issues_count": 10,
-  "language_stats": {
-    "Python": {"bytes": 50000, "percentage": 75.5},
-    "JavaScript": {"bytes": 15000, "percentage": 24.5}
-  },
-  "archived": false,
-  "fork": false,
-  "private": false
-}
-```
-
----
-
-## 🔄 Automated Deployment
-
-The dashboard auto-updates through GitHub Actions with multiple triggers:
-
-### Workflow Triggers
-
-| Trigger | Frequency | Description |
-|---------|-----------|-------------|
-| 🔄 **Push to Main** | On commit | Instant deployment on code changes |
-| ⏰ **Scheduled** | Daily at 00:00 UTC | Automatic data refresh |
-| 🖱️ **Manual Dispatch** | On demand | Trigger via Actions tab |
-
-### Deployment Pipeline
-
-```mermaid
-graph LR
-    A[Trigger] --> B[Fetch GitHub Data]
-    B --> C[Validate Data]
-    C --> D[Generate JSON]
-    D --> E[Deploy to Pages]
-    E --> F[Live Dashboard]
-```
-
-**Workflow Features:**
-- ✅ Data validation before deployment
-- 💾 Automatic backup of previous data
-- 🔐 Secure token handling via GitHub Secrets
-- 📧 Failure notifications
-- 🚀 Zero-downtime deployment
-
-### Setup GitHub Pages Deployment
-
-1. Go to repository **Settings** → **Pages**
-2. Set source to **GitHub Actions**
-3. Add `MY_PAT` secret in **Settings** → **Secrets** → **Actions**
-4. Workflow runs automatically on next commit
-
----
-
-## 📈 Analytics & Insights
-
-### Available Metrics
-
-| Category | Metrics |
-|----------|---------|
-| **Repository Stats** | Total repos, stars, forks, watchers, issues |
-| **Activity** | Last update, commit frequency, contribution timeline |
-| **Languages** | Distribution, bytes written, file counts |
-| **Engagement** | Stars per repo, fork ratio, issue response time |
-| **Quality** | License compliance, documentation coverage |
-
-### Visualization Types
-
-- 🥧 **Donut Charts**: Language distribution across repositories
-- 📊 **Bar Charts**: Top repositories by stars, forks, or activity
-- 📈 **Line Charts**: Repository activity over time
-- 🔵 **Scatter Plots**: Correlation between stars and forks
-- 📉 **Trend Analysis**: Growth patterns and forecasts
-
----
-
-## 🎨 Customization
-
-### Theming
-
-Edit CSS variables in `docs/index.html` to customize colors:
-
-```css
-:root {
-    --bg-primary: #0d1117;      /* Main background */
-    --bg-secondary: #161b22;    /* Card background */
-    --accent-blue: #58a6ff;     /* Primary accent */
-    --accent-green: #3fb950;    /* Success color */
-    --text-primary: #e6edf3;    /* Main text */
-}
-```
-
-### Adding Custom Charts
-
-Add new visualizations by extending the chart rendering functions:
-
-```javascript
-function renderCustomChart() {
-    const ctx = document.getElementById('customChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'radar',
-        data: { /* your data */ },
-        options: { /* your options */ }
-    });
-}
-```
-
-### Filtering & Sorting
-
-Customize filter options in the JavaScript section:
-
-```javascript
-// Add custom sort option
-<option value="custom">🎯 Custom Metric</option>
-
-// Implement custom sort logic
-case 'custom':
-    return calculateCustomMetric(b) - calculateCustomMetric(a);
-```
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Here's how you can help:
-
-1. **🍴 Fork** the repository
-2. **🌿 Create** a feature branch: `git checkout -b feature/amazing-feature`
-3. **💻 Commit** changes: `git commit -m 'Add amazing feature'`
-4. **📤 Push** to branch: `git push origin feature/amazing-feature`
-5. **🎉 Open** a Pull Request
-
-### Development Guidelines
-
-- Follow existing code style and conventions
-- Add tests for new features
-- Update documentation for API changes
-- Ensure all checks pass before submitting PR
-
----
-
-## 📄 License
-
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 🙏 Acknowledgments
-
-- **GitHub API** for providing comprehensive repository data
-- **Chart.js** for beautiful, responsive charts
-- **GitHub Actions** for seamless automation
-- **Open Source Community** for inspiration and support
-
----
-
-## 📞 Support
-
-- 📧 **Issues**: [GitHub Issues](https://github.com/fabriziosalmi/repos/issues)
-- 💬 **Discussions**: [GitHub Discussions](https://github.com/fabriziosalmi/repos/discussions)
-- 📖 **Documentation**: [Setup Guide](SETUP.md)
-
----
-
-## 🔒 Privacy & Security
-
-- ✅ **No tracking or analytics**
-- ✅ **No cookies or local storage abuse**
-- ✅ **No external API calls from client**
-- ✅ **All data fetched server-side**
-- ✅ **Open source and auditable**
-
----
-
-<div align="center">
-
-**Built with ❤️ and ☕**
-
-[![GitHub followers](https://img.shields.io/github/followers/fabriziosalmi?style=social)](https://github.com/fabriziosalmi)
-[![Twitter Follow](https://img.shields.io/twitter/follow/fabriziosalmi?style=social)](https://twitter.com/fabriziosalmi)
-
-**⭐ Star this repo if you find it useful!**
-
-</div>
+[<img src="https://img.shields.io/badge/linkedin-%230077B5.svg?&style=for-the-badge&logo=linkedin&logoColor=white" />](https://www.linkedin.com/in/fabriziosalmi/)
