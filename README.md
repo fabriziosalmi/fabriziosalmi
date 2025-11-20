@@ -38,6 +38,7 @@ My repositories are not isolated scripts. They are modules of a larger vision: *
 
 #### 🧠 INTELLIGENCE (AI Ops & Agents)
 *Teaching machines to understand intent, not just commands.*
+*   **[Navigator](https://github.com/fabriziosalmi/navigator):** *The Sentient Interface SDK*. Navigate the web with gesture, voice, and predictive AI.
 *   **[ALMA](https://github.com/fabriziosalmi/alma):** *Infrastructure as Conversation.* A cognitive engine that manages servers via natural language, featuring risk assessment and adaptive personas.
 *   **[silence](https://github.com/fabriziosalmi/silence):** An energy-efficient AI inference router that knows *when* to use a large model and when to use simple logic.
 
