@@ -35,7 +35,7 @@ My repositories are not isolated scripts. They are modules of a larger vision: *
 *   **[wildbox](https://github.com/fabriziosalmi/wildbox):** The Endgame. An open-source unified security platform (SIEM/SOAR/WAF) for self-hosted sovereignty.
 *   **[certmate](https://github.com/fabriziosalmi/certmate):** Enterprise-grade SSL certificate management automation. Zero-downtime renewals across multiple DNS providers.
 *   **[secbeat](https://github.com/fabriziosalmi/secbeat):** Rust-based DDoS protection layer targeting L4/L7 attacks.
-*   **[blacklists](https://github.com/fabriziosalmi/blacklists):** Hourly updated domain blocklists protecting millions of users.
+*   **[blacklists](https://github.com/fabriziosalmi/blacklists):** Hourly updated domain blocklists.
 
 #### 🧠 INTELLIGENCE (AI Ops & Agents)
 *Teaching machines to understand intent, not just commands.*
