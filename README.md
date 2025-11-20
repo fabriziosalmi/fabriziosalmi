@@ -72,7 +72,7 @@ Moving beyond static installations towards software that is **generated on-deman
 
 ### 🤝 Connect & Collaborate
 
-I operate at the intersection of **Enterprise Reliability** (MainStreaming, Borsa Italiana background) and **Creative Innovation**.
+I operate at the intersection of **Enterprise Reliability** and **Creative Innovation**.
 
 If you are interested in **Autonomous Infrastructure**, **AI Security**, or **Sovereign Tech**, let's talk.
 
