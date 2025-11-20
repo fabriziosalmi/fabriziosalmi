@@ -44,7 +44,7 @@ My repositories are not isolated scripts. They are modules of a larger vision: *
 #### 🏗️ STRUCTURE (Orchestration & Infra)
 *Managing the metal that powers the mind.*
 *   **[lws](https://github.com/fabriziosalmi/lws):** A unified CLI for Proxmox, LXC, and Docker management. The "AWS CLI" for your homelab.
-*   **[proxmox-vm-autoscale](https://github.com/fabriziosalmi/proxmox-vm-autoscale):** Intelligent resource scaling for Proxmox environments.
+*   **[proxmox-vm-autoscale](https://github.com/fabriziosalmi/proxmox-vm-autoscale) and [proxmox-lxc-autoscale](https://github.com/fabriziosalmi/proxmox-lxc-autoscale):** Intelligent resource scaling for Proxmox environments.
 
 #### 🏛️ ECONOMY & GOVERNANCE
 *Codifying trust and value.*
