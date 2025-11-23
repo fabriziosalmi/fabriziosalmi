@@ -21,7 +21,7 @@
 I am a **Systems Architect** and **Security Engineer** who uses code to enforce logic, safety, and efficiency upon chaos.
 My work bridges the gap between **Infrastructure** (Metal/Cloud), **Cybersecurity** (Defense/Offense), and **Artificial Intelligence** (Reasoning/Agency). 
 
-I don't just build software; I build **autonomous ecosystems** that protect, manage, and heal themselves.
+I build **autonomous ecosystems** that protect, manage, and heal themselves. 
 
 ---
 
