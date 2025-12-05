@@ -33,6 +33,8 @@ My work bridges the gap between **Infrastructure** (Metal/Cloud), **Cybersecurit
 *   **[certmate](https://github.com/fabriziosalmi/certmate):** SSL certificate management automation. Zero-downtime renewals across multiple DNS providers.
 *   **[blacklists](https://github.com/fabriziosalmi/blacklists):** Hourly updated domain blocklists.
 *   **[secure-proxy-manager](https://github.com/fabriziosalmi/secure-proxy-manager):** Containerized secure proxy solution with filtering and monitoring.
+*   **[aidlp](https://github.com/fabriziosalmi/aidlp):** Data Loss Prevention (DLP) for LLM endpoints.
+*   **[caddy-mib](https://github.com/fabriziosalmi/caddy-mib):** Track and ban client IPs generating repetitive errors on Caddy.
 
 #### 🧠 INTELLIGENCE (AI Ops & Agents)
 *Teaching machines to understand intent, not just commands.*
@@ -41,6 +43,9 @@ My work bridges the gap between **Infrastructure** (Metal/Cloud), **Cybersecurit
 *   **[silence](https://github.com/fabriziosalmi/silence):** Energy-efficient AI inference router (Semantic Zoom).
 *   **[iamnotacoder](https://github.com/fabriziosalmi/iamnotacoder):** AI toolkit for automated code refactoring and generation.
 *   **[ethical-ai](https://github.com/fabriziosalmi/ethical-ai):** Framework for automating LLM ethical self-assessments.
+*   **[nexus-mcp-server](https://github.com/fabriziosalmi/nexus-mcp-server):** Yet another MCP server with custom tools support.
+*   **[brutal-coding-tool](https://github.com/fabriziosalmi/brutal-coding-tool):** Audit your vibecode and make it brutally solid.
+*   **[sci-fi](https://github.com/fabriziosalmi/sci-fi):** Simple Code Improver - Framework & Interface.
 
 #### 🏗️ STRUCTURE (Orchestration & Infra)
 *Managing the metal that powers the mind.*
@@ -49,6 +54,10 @@ My work bridges the gap between **Infrastructure** (Metal/Cloud), **Cybersecurit
 *   **[shortlist](https://github.com/fabriziosalmi/shortlist):** Git-based decentralized broadcasting system.
 *   **[proxmox-vm-autoscale](https://github.com/fabriziosalmi/proxmox-vm-autoscale) & [lxc-autoscale](https://github.com/fabriziosalmi/proxmox-lxc-autoscale):** Intelligent resource scaling.
 *   **[reverse-proxy-manager](https://github.com/fabriziosalmi/reverse-proxy-manager):** Centralized management for distributed proxy nodes.
+*   **[proximity](https://github.com/fabriziosalmi/proximity):** An immersive management layer for Proxmox based personal infrastructure.
+*   **[dgrid](https://github.com/fabriziosalmi/dgrid):** Decentralized Git-Relay Infrastructure for Distributed Tasks.
+*   **[proxima-ui](https://github.com/fabriziosalmi/proxima-ui):** A simple web interface to manage Proxmox hosts, VMs and containers.
+*   **[trinity](https://github.com/fabriziosalmi/trinity):** A self-healing static site generator.
 
 #### ☁️ CLOUDFLARE & DNS TOOLING
 *Mastering the edge.*
@@ -56,6 +65,7 @@ My work bridges the gap between **Infrastructure** (Metal/Cloud), **Cybersecurit
 *   **[zonecontrol](https://github.com/fabriziosalmi/zonecontrol):** GitHub Actions automation for Cloudflare Zones.
 *   **[wafcontrol](https://github.com/fabriziosalmi/wafcontrol):** Cloudflare WAF settings automation via IaC.
 *   **[dnscontrol-actions](https://github.com/fabriziosalmi/dnscontrol-actions):** Automate DNS updates across providers.
+*   **[dnsmate](https://github.com/fabriziosalmi/dnsmate):** Yet another web interface for PowerDNS.
 
 #### 🎨 CREATIVE & MEDIA
 *Experiments in UI, Audio, and Video.*
@@ -64,6 +74,9 @@ My work bridges the gap between **Infrastructure** (Metal/Cloud), **Cybersecurit
 *   **[webtek](https://github.com/fabriziosalmi/webtek):** The worldwide streaming teknival platform.
 *   **[freeundergroundtekno](https://github.com/fabriziosalmi/freeundergroundtekno):** Web radio stack.
 *   **[brandkit](https://github.com/fabriziosalmi/brandkit):** Automated brand asset generator.
+*   **[uglyfeed-cdn](https://github.com/fabriziosalmi/uglyfeed-cdn):** 🌍 UglyFeed RSS feeds.
+*   **[open-video-watermark](https://github.com/fabriziosalmi/open-video-watermark):** A video watermarking web application.
+*   **[audiolibri-editor](https://github.com/fabriziosalmi/audiolibri-editor):** audiolibri.org data editor.
 
 #### 🏛️ ECONOMY & GOVERNANCE
 *Codifying trust and value.*
