@@ -80,7 +80,7 @@ My work bridges the gap between **Infrastructure** (Metal/Cloud), **Cybersecurit
 
 #### 🏛️ ECONOMY & GOVERNANCE
 *Codifying trust and value.*
-*   **[TAM](https://github.com/fabriziosalmi/tam):** *Temporary Autonomous Monetization.* DeFi protocol with reputation-weighted governance.
+*   **[TAM](https://github.com/fabriziosalmi/tam):** *Temporary Autonomous Monetization.* DeFi protocol with reputation-weighted governance. 🔒
 
 ---
 
