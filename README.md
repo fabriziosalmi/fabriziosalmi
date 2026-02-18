@@ -11,9 +11,7 @@
   </p>
 </div>
 
----
-
-### ⚡ "I am not a coder."
+### "I am not a coder."
 
 I operate at the intersection of **Enterprise Reliability** and **Creative Innovation**.
 
