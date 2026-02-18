@@ -8,9 +8,6 @@
     <a href="https://github.com/sponsors/fabriziosalmi">
       <img src="https://img.shields.io/badge/Sponsor-Support_My_R%26D-pink?style=for-the-badge&logo=github-sponsors" alt="Sponsor"/>
     </a>
-    <a href="https://audiolibri.org">
-      <img src="https://img.shields.io/badge/Public_Service-Audiolibri.org-green?style=for-the-badge" alt="Audiolibri"/>
-    </a>
   </p>
 </div>
 
