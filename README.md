@@ -11,7 +11,7 @@
 
 ---
 
-Radio on air since **2008** > GitHub since **2012** > father since **2023**. Independent researcher out of **Italy** — *infrastructure × security × AI agency*.
+DJ since 1998 > web radio on air since **2008** > GitHub since **2012** > father since **2023**. Independent researcher out of **Italy** — *infrastructure × security × AI agency*.
 
 I build procedural systems: things that run on their own, that keep their own rigor, that outlast the moment they were made for. The radio taught me that before LLMs were a category.
 
