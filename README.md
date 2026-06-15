@@ -11,8 +11,10 @@
 
 ---
 
-DJ since **1998** > web radio on air since **2008** > GitHub since **2012** > father since **2023**. Independent researcher out of **Italy** — *infrastructure × security × AI agency*.
+I Build Scalable, Secure, and Autonomous Systems.
 
-I build procedural systems: things that run on their own, that keep their own rigor, that outlast the moment they were made for. The radio taught me that before LLMs were a category.
+I am an infrastructure architect and engineer with 20+ years of experience designing, building, and defending mission-critical systems in high-stakes environments, from SMB to European financial markets and global CDNs.
+
+My core philosophy is simple: autonomy through code. I transform complex, manual, and fragmented operational problems into unified, automated, and efficient opportunities.
 
 If you work on autonomous infrastructure, AI security, edge systems, or sovereign tech — *parliamone*.
