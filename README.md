@@ -1,5 +1,5 @@
 <div align="center">
-  <h1>Fabrizio Salmi</h1>
+  <h1><i>Fab</i>rizio Salmi</h1>
   <p><em>"I am not a coder."</em></p>
 
   <p>
