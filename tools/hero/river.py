@@ -3,6 +3,7 @@
 stargazer, forks lighter, cluster radius from sqrt(total), points sorted from
 the centre, one sun per repo coloured by its language. The spiral became a
 timeline because a spiral wastes the corners of a 2.3:1 frame."""
+from . import icons
 from .geometry import *
 from .rng import RNG
 import math
@@ -145,9 +146,11 @@ def render(d):
                    f"{pc(t0+0.14):.2f}%{{opacity:1;transform:translateY(0)}}"
                    f"{pc(t0+nstep-0.16):.2f}%{{opacity:1}}"
                    f"{pc(t0+nstep):.2f}%,100%{{opacity:0;transform:translateY(-7px)}}}}")
+        icons.install(css, f"rbi{k}", t0 + 0.12, "star")
         css.append(f".rb{k}{{opacity:0;animation:rb{k} {LOOP:g}s cubic-bezier(.2,1,.3,1) infinite}}")
         sz = 84 if len(nm) <= 11 else (64 if len(nm) <= 16 else 48)
         SAYS.append(f'<g class="rb{k}">'
                     + txt(W // 2, 198, nm, sz, ink, -1.5, "middle", 800, halo=6, face=DISPLAY)
-                    + txt(W // 2, 246, f'{rp["s"]:,} STARS', 26, rp["color"], 6, "middle", 700, halo=4)
+                    + txt(W / 2 - 20, 248, f'{rp["s"]:,}', 28, rp["color"], 2, "end", 700, halo=4)
+                    + icons.star(W / 2 + 6, 240, 15, rp["color"], f"rbi{k}")
                     + "</g>")

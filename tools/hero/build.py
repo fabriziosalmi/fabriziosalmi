@@ -9,7 +9,7 @@ Add a beat by adding a module and a line, not by growing an existing one
 """
 from .doc import Doc
 from .geometry import *
-from . import motion, chrome, ring, river, says, terminal, wall, reduced_motion
+from . import motion, chrome, eye, ring, river, roll, says, terminal, wall, reduced_motion
 
 
 def build(S, th, T):
@@ -24,6 +24,7 @@ def build(S, th, T):
     says.render(d)                   # statements are buffered, drawn last
     chrome.render(d)                 # the dial, act 01 only
     ring.render(d)                   # act 01: the calendar becomes a year
+    roll.render(d)                   # every public repository, by name, accelerating
     river.render(d)                  # act 02: the repositories, one dot per star
     d.add("</g>")
 
@@ -40,27 +41,23 @@ def build(S, th, T):
 
 
 def _hub(d):
-    """One anchor for the eye, and a ring that pulses on every act change."""
-    add, T, hi, line = d.add, d.T, d.hi, d.line
+    """The eye. It used to be a spiral; a spiral does not watch anything."""
+    d.add('<g class="dp">')
+    for a in range(NACT):
+        d.add(f'<circle class="hubr pcol{a}" cx="{CX}" cy="{CY}" r="30" fill="none" '
+              f'stroke="{d.hi[a]}" stroke-width="1.4"/>')
     d.css.append(f"""
 .hubr{{transform-origin:{CX}px {CY}px;animation:hubr 3s cubic-bezier(.3,0,.2,1) infinite}}
 @keyframes hubr{{0%{{transform:scale(1);opacity:.55}}6%{{transform:scale(1.5);opacity:0}}
  100%{{transform:scale(1.5);opacity:0}}}}
 """)
-    add('<g class="dp"><g class="act0">')
-    for a in range(NACT):
-        add(f'<circle class="hubr pcol{a}" cx="{CX}" cy="{CY}" r="30" fill="none" '
-            f'stroke="{hi[a]}" stroke-width="1.4"/>')
-    add(f'<circle cx="{CX}" cy="{CY}" r="30" fill="{T["disc"]}" '
-        f'fill-opacity="{0.10 if d.th == "dark" else 0.035}" stroke="{line}" stroke-width="1"/>')
-    add(f'<g class="spinf" style="transform-origin:{CX}px {CY}px"><text x="{CX}" y="{CY}" '
-        f'font-size="26" fill="{T["warm"]}" text-anchor="middle" '
-        f'dominant-baseline="central">꩜</text></g>')
-    add("</g></g>")
+    eye.render(d, CX, CY, ACTW[0][0] + 0.2, ACTW[0][1])
+    d.add("</g>")
 
 
 def _gap(d):
     """The two blank frames the story is projected through, above everything."""
     d.add(f'<rect class="gap0" width="{W}" height="{H}" fill="{d.T["knock"]}" pointer-events="none"/>')
     d.add(f'<rect class="gap1" width="{W}" height="{H}" fill="{d.T["knock"]}" pointer-events="none"/>')
+    d.add(f'<rect class="gap2" width="{W}" height="{H}" fill="{d.T["knock"]}" pointer-events="none"/>')
     d.add("</svg>")

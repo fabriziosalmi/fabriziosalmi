@@ -42,7 +42,7 @@ def render(d):
     # then the whole frame drops to the page's own colour for a fifth of a
     # second. Nothing is on screen. The story comes out of that nothing, and at
     # the end it goes back in the same way.
-    for gi, gt in ((0, T_TERM), (1, T_OUT - 0.5)):
+    for gi, gt in ((0, T_TERM), (1, T_OUT - 0.5), (2, ROLL[1] - 0.34)):
         css.append(f"@keyframes gap{gi}{{0%,{pc(gt):.2f}%{{opacity:0}}"
                    f"{pc(gt+0.16):.2f}%,{pc(gt+0.34):.2f}%{{opacity:1}}"
                    f"{pc(gt+0.62):.2f}%,100%{{opacity:0}}}}")
@@ -96,9 +96,9 @@ def render(d):
         f'height="{TSZ*0.92:.0f}" fill="{T["warm"]}"/>')
 
     # the closing lines: what came out, and when it changes
-    OUT_L = [(f'  {fmt(S["stars"])} stars · {S["n_repos"]} repos · '
-              f'{fmt(S["contrib"])} contributions', mut),
-             ("  next render 04:17 UTC — tomorrow this is a different picture", faint)]
+    # One line, not three. The numbers were on screen at 122px a moment ago;
+    # repeating them small at the end is reading with nothing gained.
+    OUT_L = [("  next render 04:17 UTC — tomorrow this is a different picture", mut)]
     for li, (line, col) in enumerate(OUT_L):
         t0 = T_OUT + 0.3 + li * 0.45
         crumble(f"to{li}_", line, TX, TY + 36 + li * 32, 19, col,

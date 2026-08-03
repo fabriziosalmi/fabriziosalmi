@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """The statements. Each one owns the whole canvas for its beat: nothing has to
 shrink to make room for a drawing, so a number can be 108px."""
+from . import icons
 from .geometry import *
 from .rng import RNG
 import math
@@ -93,8 +94,38 @@ def render(d):
         say(f"sf{fi}", t0, t0 + step, [(214, big, 122, hi[0], -3.5, 800),
                                        (256, lab, 22, ink, 7, 600)])
 
-    say("stot", SAY_2[1] - 1.15, SAY_2[1],
-        [(198, f'{sum(r["s"] for r in S["river"]):,}', 122, T["riv_star"], -3.5, 800),
-         (238, "STARS", 22, ink, 8, 600),
-         (278, f'{sum(r["f"] for r in S["river"]):,} FORKS · '
-               f'{len(S["river"])} REPOSITORIES', 20, mut, 3, 600)])
+    tot_s = sum(r["s"] for r in S["river"])
+    tot_f = sum(r["f"] for r in S["river"])
+    st0 = SAY_2[1] - 1.15
+    say("stot", st0, SAY_2[1],
+        [(196, f"{tot_s:,}", 122, T["riv_star"], -3.5, 800)])
+
+    # three marks instead of three words: nothing left to read
+    icons.install(css, "ic0", st0 + 0.16, "star")
+    icons.install(css, "ic1", st0 + 0.30, "fork")
+    icons.install(css, "ic2", st0 + 0.40, "repo")
+    # the star belongs to the big number above it, so it sits under it alone;
+    # the row underneath carries the other two, each mark before its own count
+    row = [("i", "fork", 19, T["riv_fork"], "ic1"),
+           ("n", f"{tot_f:,}", 0, "", ""),
+           ("i", "repo", 18, mut, "ic2"),
+           ("n", f"{len(S['river']):,}", 0, "", "")]
+    CW, GAP = 21 * 0.62, 32
+    wide = sum((CW * len(p[1]) if p[0] == "n" else p[2] * 2.1) + GAP for p in row) - GAP
+    x = W / 2 - wide / 2
+    g = ['<g class="stot2">',
+         icons.star(W / 2, 238, 21, T["riv_star"], "ic0")]
+    for kind, val, rr, col, icls in row:
+        if kind == "n":
+            g.append(txt(x, 292, val, 21, ink, 2, "start", 700, halo=3))
+            x += CW * len(val) + GAP
+        else:
+            fn = {"star": icons.star, "fork": icons.fork, "repo": icons.repo}[val]
+            g.append(fn(x + rr, 285, rr, col, icls))
+            x += rr * 2.1 + GAP
+    g.append("</g>")
+    css.append(f"@keyframes stot2{{0%,{pc(st0):.2f}%{{opacity:0}}"
+               f"{pc(st0+0.2):.2f}%,{pc(SAY_2[1]-0.3):.2f}%{{opacity:1}}"
+               f"{pc(SAY_2[1]):.2f}%,100%{{opacity:0}}}}")
+    css.append(f".stot2{{opacity:0;animation:stot2 {LOOP:g}s ease-out infinite}}")
+    SAYS.append("".join(g))

@@ -12,19 +12,20 @@ LX = 56                          # left column
 # The loop is a match cut: it opens on a pixel-accurate replica of GitHub's own
 # contribution panel, breaks it, flies the data out of the frame, and puts every
 # square back where it was. Seconds, not percentages, so the beats stay readable.
-LOOP = 29.2
+LOOP = 32.6
 T_TERM = 2.9                     # the terminal types, then blows into the gap
 T_WALL_IN = 5.05                 # and only after the name has had the stage
 T_WALL = 7.2                     # the wall holds still, long enough to be believed
-T_OUT = 25.9                     # and the terminal comes back to say what happens next
+T_OUT = 29.3                     # and the terminal comes back to say what happens next
 # Drawing beats and text beats alternate: they never share the frame, which is
 # what kept the type small. Alone on the canvas a number can be 110px.
-ACTW = [(8.6, 11.2), (14.1, 19.2)]  # 01 the ring · 02 the river (drawing only)
+ACTW = [(8.6, 11.2), (17.5, 22.6)]  # 01 the ring · 02 the river (drawing only)
 SAY_NAME = (3.25, 4.85)             # the name owns the frame, alone, right after
                                     # the prompt: you cloned it, this is whose
 SAY_1 = (11.3, 14.0)                # what the ring was
-SAY_2 = (19.7, 24.1)                # what the river was
-T_BACK = (24.2, 25.7)               # everything returns behind the wall
+ROLL  = (14.1, 17.5)                # every name, accelerating
+SAY_2 = (23.1, 27.5)                # what the river was
+T_BACK = (27.6, 29.1)               # everything returns behind the wall
 NACT = 2
 
 # The river: the galaxy of demos/galaxy straightened out for a letterbox frame.
