@@ -12,11 +12,11 @@ LX = 56                          # left column
 # The loop is a match cut: it opens on a pixel-accurate replica of GitHub's own
 # contribution panel, breaks it, flies the data out of the frame, and puts every
 # square back where it was. Seconds, not percentages, so the beats stay readable.
-LOOP = 32.6
+LOOP = 33.9
 T_TERM = 2.9                     # the terminal types, then blows into the gap
 T_WALL_IN = 5.05                 # and only after the name has had the stage
 T_WALL = 7.2                     # the wall holds still, long enough to be believed
-T_OUT = 29.3                     # and the terminal comes back to say what happens next
+T_OUT = 30.5                     # and the terminal comes back to say what happens next
 # Drawing beats and text beats alternate: they never share the frame, which is
 # what kept the type small. Alone on the canvas a number can be 110px.
 ACTW = [(8.6, 11.2), (17.5, 22.6)]  # 01 the ring · 02 the river (drawing only)
@@ -24,8 +24,10 @@ SAY_NAME = (3.25, 4.85)             # the name owns the frame, alone, right afte
                                     # the prompt: you cloned it, this is whose
 SAY_1 = (11.3, 14.0)                # what the ring was
 ROLL  = (14.1, 17.5)                # every name, accelerating
-SAY_2 = (23.1, 27.5)                # what the river was
-T_BACK = (27.6, 29.1)               # everything returns behind the wall
+MEASURE = 470                       # the one width every name is fitted to
+SAY_2 = (23.1, 28.7)                # what the river was: one name per
+                                    # repository past the star floor, then the total
+T_BACK = (28.8, 30.3)               # everything returns behind the wall
 NACT = 2
 
 # The river: the galaxy of demos/galaxy straightened out for a letterbox frame.
@@ -35,7 +37,8 @@ NACT = 2
 # corners and clips at the edges.
 RX0, RX1 = 72, 866
 RCY, RAMP = 198, 96
-RIV_BUILD, RIV_FLASH, RIV_NAMED = 3.4, 0.0, 4
+RIV_BUILD, RIV_FLASH = 3.4, 0.0
+STAR_FLOOR = 100                    # above this, a repository is named out loud
 
 # GitHub's calendar, measured from the real thing: 53 columns, 10px cells,
 # 13px pitch, and the palettes lifted from GitHub's own theme stylesheets

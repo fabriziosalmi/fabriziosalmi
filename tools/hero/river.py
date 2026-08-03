@@ -21,9 +21,11 @@ def render(d):
     riv = S["river"]
     nr = len(riv)
     A0, A1 = ACTW[1]
-    rank = {r["name"]: k for k, r in enumerate(sorted(riv, key=lambda r: -r["s"]))[:RIV_NAMED]} \
-        if False else {r["name"]: k for k, r in enumerate(sorted(riv, key=lambda r: -r["s"])[:RIV_NAMED])}
-    nstep = (SAY_2[1] - 1.15 - SAY_2[0]) / max(RIV_NAMED, 1)
+    # everything that crossed a hundred stars gets its name said out loud -
+    # a threshold, not a fixed count, so the sequence grows with the work
+    named = [r for r in sorted(riv, key=lambda r: -r["s"]) if r["s"] > STAR_FLOOR]
+    rank = {r["name"]: k for k, r in enumerate(named)}
+    nstep = (SAY_2[1] - 1.15 - SAY_2[0]) / max(len(named), 1)
     placed, suns = [], []
     g = ['<g>']   # no act shell here: the clusters carry their own life
     for i, rp in enumerate(riv):

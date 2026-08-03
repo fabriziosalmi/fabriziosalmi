@@ -16,8 +16,18 @@ thing at a time.
 The cadence is a power law, not a constant step: t(i) = T·(i/n)^0.62 spaces the
 early names apart and packs the late ones, so the acceleration is felt rather
 than announced.
+
+Every name is set to the same measure. Ninety-eight names of ninety-eight
+different widths flashing in one spot makes the eye jump on every frame; fitted
+to a common width the run becomes a pulse instead of a stutter, and the varying
+size reads as a fact about the name (long ones are set smaller) rather than as
+noise. Mono, because the advance width is exact arithmetic and because these
+are identifiers - this beat is a listing, not a headline.
+
+They arrive from below and leave upward, one hard step each: at nineteen
+milliseconds a tween is a smear, but a jump has direction, and direction is
+what makes a fast list feel like it is moving rather than blinking.
 """
-from . import icons
 from .geometry import *
 
 
@@ -31,9 +41,9 @@ def render(d):
     t0, t1 = ROLL
     repos = sorted(S["repos"], key=lambda r: r["createdAt"])
     n = len(repos)
-    # the last stretch belongs to the count, alone, and then to the flash:
-    # nothing shares the frame with the names while they run
-    span = (t1 - 0.95) - t0
+    # names all the way to the flash: the count was one more thing to read at
+    # the end of a run whose whole point is that you stop reading
+    span = (t1 - 0.42) - t0
 
     for i, rp in enumerate(repos):
         nm = rp["name"]
@@ -49,28 +59,29 @@ def render(d):
         on = a + 0.008
         off = a + min(0.022 * 0.82, (b - a) * 0.62)
         win_check(f"roll {i}", a, on, off, b)
-        sz = 46 if len(nm) <= 14 else (36 if len(nm) <= 20 else 29)
-        css.append(f"@keyframes rl{i}{{0%,{pc(a):.3f}%{{opacity:0}}"
-                   f"{pc(on):.3f}%{{opacity:1;animation-timing-function:steps(1,end)}}"
-                   f"{pc(off):.3f}%{{opacity:1}}"
-                   f"{pc(b):.3f}%,100%{{opacity:0}}}}")
+        # one measure for all of them: size follows from the name's length
+        sz = max(25.0, min(92.0, MEASURE / (len(nm) * 0.6 + 0.4)))
+        css.append(f"@keyframes rl{i}{{"
+                   f"0%,{pc(a):.3f}%{{opacity:0;transform:translateY(11px)}}"
+                   f"{pc(on):.3f}%{{opacity:1;transform:translateY(0);"
+                   f"animation-timing-function:steps(1,end)}}"
+                   f"{pc(off):.3f}%{{opacity:1;transform:translateY(0)}}"
+                   f"{pc(b):.3f}%,100%{{opacity:0;transform:translateY(-11px)}}}}")
         css.append(f".rl{i}{{opacity:0;animation:rl{i} {LOOP:g}s linear infinite}}")
         # the name itself lights up, in the colour of its own language. A dot
         # beside it would be a second thing on screen, and the frame belongs to
         # one thing at a time.
         SAYS.append(f'<g class="rl{i}">'
-                    + txt(W / 2, 214, nm, sz, ink if lit else faint, -0.5, "middle",
-                          800 if lit else 500, halo=5, face=DISPLAY)
+                    + txt(W / 2, 216, nm, round(sz, 1), ink if lit else faint, 0.4,
+                          "middle", 700 if lit else 400, halo=5)
                     + "</g>")
 
-    # the count lands after the last name, on an empty frame
-    c0 = t0 + span + 0.06
-    css.append(f"@keyframes rlc{{0%,{pc(c0):.2f}%{{opacity:0;transform:scale(.86)}}"
-               f"{pc(c0+0.14):.2f}%,{pc(t1-0.42):.2f}%{{opacity:1;transform:scale(1)}}"
-               f"{pc(t1-0.3):.2f}%,100%{{opacity:0;transform:scale(1.1)}}}}")
-    css.append(f".rlc{{opacity:0;transform-box:fill-box;transform-origin:center;"
-               f"animation:rlc {LOOP:g}s cubic-bezier(.2,1.5,.4,1) infinite}}")
-    icons.install(css, "rli", c0 + 0.04, "repo")
-    SAYS.append('<g class="rlc">'
-                + txt(W / 2 - 22, 222, str(n), 92, ink, -2, "end", 800, halo=5, face=DISPLAY)
-                + icons.repo(W / 2 + 20, 200, 26, mut, "rli") + "</g>")
+    # a rule the names sit on, the exact measure they are fitted to: something
+    # still to hold the eye while everything above it flickers
+    css.append(f"@keyframes rlr{{0%,{pc(t0):.2f}%{{opacity:0;transform:scaleX(.2)}}"
+               f"{pc(t0+0.22):.2f}%,{pc(t0+span):.2f}%{{opacity:.5;transform:scaleX(1)}}"
+               f"{pc(t1-0.3):.2f}%,100%{{opacity:0;transform:scaleX(.2)}}}}")
+    css.append(f".rlr{{opacity:0;transform-box:fill-box;transform-origin:center;"
+               f"animation:rlr {LOOP:g}s cubic-bezier(.2,1,.3,1) infinite}}")
+    SAYS.append(f'<rect class="rlr" x="{W/2 - MEASURE/2:.0f}" y="238" '
+                f'width="{MEASURE}" height="1.5" fill="{mut}"/>')

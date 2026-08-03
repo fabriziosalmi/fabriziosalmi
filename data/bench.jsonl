@@ -3,3 +3,4 @@
 {"animated": 846, "bytes_gzip": 46564, "bytes_raw": 421815, "commit": "d883d90", "elements": 1221, "filter_refs": 19, "filters_defined": 9, "keyframes": 496, "loop_s": 32.6, "rules": 499, "sha": "7b977516106a", "tag": "v0.1.3"}
 {"animated": 848, "bytes_gzip": 46708, "bytes_raw": 419273, "commit": "d883d90", "elements": 1135, "filter_refs": 20, "filters_defined": 9, "keyframes": 498, "loop_s": 32.6, "rules": 501, "sha": "6136c0bbf93d", "tag": "v0.1.3"}
 {"animated": 848, "bytes_gzip": 46592, "bytes_raw": 419951, "commit": "e9e5d22", "elements": 1135, "filter_refs": 20, "filters_defined": 9, "keyframes": 498, "loop_s": 32.6, "rules": 501, "sha": "cf1d6c0f51c0", "tag": "v0.1.4"}
+{"animated": 853, "bytes_gzip": 46808, "bytes_raw": 420988, "commit": "7d6bd60", "elements": 1143, "filter_refs": 20, "filters_defined": 9, "keyframes": 503, "loop_s": 33.9, "rules": 506, "sha": "3e429b8ccf26", "tag": "v0.1.4"}

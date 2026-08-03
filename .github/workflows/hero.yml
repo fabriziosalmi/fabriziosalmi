@@ -69,4 +69,7 @@ jobs:
 
           git add data/profile.json hero-dark.svg hero-light.svg README.md
           git commit -m "chore(hero): regenerated from today's data"
-          git push
+          # actions/checkout leaves the repo on a detached HEAD, so a bare push
+          # has no branch to go to. It only bites on the scheduled run: every
+          # push-triggered one worked and hid the bug.
+          git push origin "HEAD:${GITHUB_REF_NAME}"

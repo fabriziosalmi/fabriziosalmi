@@ -32,5 +32,11 @@ jobs:
             echo "index unchanged"
           else
             git commit -m "chore: update REPOS.md from fabriziosalmi/repos"
-            git push
+            # actions/checkout leaves the repo on a detached HEAD, so a bare
+            # push has no branch to go to. It only bites on the scheduled run:
+            # every push-triggered one worked and hid the bug for a week.
+            # actions/checkout leaves the repo on a detached HEAD, so a bare push
+          # has no branch to go to. It only bites on the scheduled run: every
+          # push-triggered one worked and hid the bug.
+          git push origin "HEAD:${GITHUB_REF_NAME}"
           fi
