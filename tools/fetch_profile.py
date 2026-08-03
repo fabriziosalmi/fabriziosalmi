@@ -21,7 +21,7 @@ QUERY = """
                  orderBy: {field: STARGAZERS, direction: DESC}) {
       totalCount
       pageInfo { hasNextPage endCursor }
-      nodes { name stargazerCount createdAt primaryLanguage { name } }
+      nodes { name stargazerCount forkCount createdAt primaryLanguage { name color } }
     }
     contributionsCollection {
       contributionCalendar {

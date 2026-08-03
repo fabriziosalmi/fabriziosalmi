@@ -23,12 +23,21 @@ LX = 56                          # left column
 # The loop is a match cut: it opens on a pixel-accurate replica of GitHub's own
 # contribution panel, breaks it, flies the data out of the frame, and puts every
 # square back where it was. Seconds, not percentages, so the beats stay readable.
-LOOP = 14.0
+LOOP = 15.0
 T_WALL = 2.4                     # the wall holds still, long enough to be believed
 T_OUT = 1.2                      # the break
-ACTW = [(3.6, 6.4), (6.4, 9.4), (9.4, 12.4)]
-T_BACK = (12.4, 13.6)            # everything returns behind the wall
-NACT = 3
+ACTW = [(3.6, 6.5), (6.9, 12.2)]   # 01 the ring · 02 the river
+T_BACK = (12.5, 13.9)              # everything returns behind the wall
+NACT = 2
+
+# The river: the galaxy of demos/galaxy straightened out for a letterbox frame.
+# Same model (one dot per star, forks lighter, cluster radius from sqrt(total),
+# points sorted from the centre, a sun per repo coloured by language) with the
+# spiral swapped for a timeline, because a spiral in a 2.3:1 frame wastes the
+# corners and clips at the edges.
+RX0, RX1 = 466, 886
+RCY, RAMP = 196, 84
+RIV_BUILD, RIV_FLASH, RIV_NAMED = 2.6, 3.3, 4
 
 # GitHub's calendar, measured from the real thing: 53 columns, 10px cells,
 # 13px pitch, and the palettes lifted from GitHub's own theme stylesheets
@@ -82,6 +91,7 @@ THEMES = {
         line_op=0.42, hair_op=0.20,
         disc="#ffffff", disc_op=0.022, warm="#e3b341", knock="#0d1117",
         halo="#010409", halo_op=0.55,
+        riv_star="#f5c542", riv_fork="#ffedb4", riv_lit="#fff2c8",
         acc=["#3fb950", "#58a6ff", "#d29922"],
         hi=["#56d364", "#79c0ff", "#e3b341"],
         glow=3.4, glow_op=1.0,
@@ -94,11 +104,27 @@ THEMES = {
         line_op=0.42, hair_op=0.22,
         disc="#000000", disc_op=0.018, warm="#9a6700", knock="#ffffff",
         halo="#ffffff", halo_op=0.72,
+        # on white, gold turns to mud: ink dots, like a printed star chart
+        riv_star="#4a4032", riv_fork="#8a7a55", riv_lit="#111111",
         acc=["#1a7f37", "#0969da", "#9a6700"],
         hi=["#2da44e", "#218bff", "#bf8700"],
         glow=2.0, glow_op=0.55,
     ),
 }
+
+
+class RNG:
+    """Seeded LCG, the only randomness allowed: two renders draw the same river."""
+
+    def __init__(self, seed):
+        self.s = seed & 0x7FFFFFFF or 1
+
+    def next(self):
+        self.s = (1103515245 * self.s + 12345) & 0x7FFFFFFF
+        return self.s / 0x7FFFFFFF
+
+    def uni(self, a, b):
+        return a + (b - a) * self.next()
 
 
 # ------------------------------------------------------------------ data
@@ -122,6 +148,13 @@ def load(path):
         top=sorted(repos, key=lambda r: -r["stargazerCount"])[0],
         first_year=min(r["createdAt"] for r in repos)[:4],
         peak=max(d["contributionCount"] for d in days),
+        # the river: only repos with at least one star or one fork, oldest first
+        river=sorted(
+            [{"name": x["name"], "s": x["stargazerCount"], "f": x["forkCount"],
+              "born": x["createdAt"], "year": x["createdAt"][:4],
+              "color": (x["primaryLanguage"] or {}).get("color") or "#8b949e"}
+             for x in repos if x["stargazerCount"] >= 1 or x["forkCount"] >= 1],
+            key=lambda r: r["born"]),
         built=datetime.now(timezone.utc).strftime("%Y-%m-%d"),
     )
 
@@ -203,22 +236,88 @@ text{{font-family:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,monospace
 @keyframes shim{{0%{{transform:translateX(-300px)}}34%,100%{{transform:translateX(560px)}}}}
 """)
 
-    # THE TEAR. Dead centre of the loop, for a third of a second: the whole frame
-    # slips, the channels come apart, and the wall shows through the data - as if
-    # the interface underneath had never gone anywhere. Eased in, eased out, with
-    # three hard slips inside so it reads as a tear and not as a wobble.
-    G = (48.4, 49.1, 50.2, 50.9)     # % of the loop: before, in, hold, after
-    css.append(f"""
-@keyframes tear{{
- 0%,{G[0]:.1f}%{{transform:translate(0,0) skewX(0);filter:none}}
- {G[0]+0.25:.1f}%{{transform:translate(3px,-1px) skewX(-.7deg);filter:url(#rgb);animation-timing-function:steps(1,end)}}
- {G[0]+0.75:.1f}%{{transform:translate(-6px,1px) skewX(1.5deg) scaleY(1.008);filter:url(#rgb);animation-timing-function:steps(1,end)}}
- {G[1]+0.35:.1f}%{{transform:translate(0,0) skewX(0);filter:none;animation-timing-function:steps(1,end)}}
- {G[2]:.1f}%{{transform:translate(-3px,1px) skewX(.9deg);filter:url(#rgb);animation-timing-function:steps(1,end)}}
- {G[3]:.1f}%,100%{{transform:translate(0,0) skewX(0);filter:none}}}}
-.tear{{transform-box:view-box;transform-origin:center;
- animation:tear {LOOP:g}s cubic-bezier(.7,0,.3,1) infinite}}
-""")
+    def impact(name, t0, amp=1.0, dur=0.5, steps=22, hitstop=0.07, chroma=True,
+               chaos=False):
+        """One impact, sampled and baked into keyframes.
+
+        Trauma model (Squirrel Eiserloh, GDC 2016), the same one space23 uses:
+        the offset is trauma**2, not trauma — a non-linear response that hits
+        hard on the peaks and settles fast. The noise is three sines at
+        decorrelated frequencies (poor man's Perlin-1D); pure random dithers.
+
+        hitstop: the first milliseconds are frozen with steps(1,end). It is the
+        freeze frame of the hit — without it the blow never lands.
+
+        chaos: the middle impact only. Colour drops to greyscale, two hard
+        flashes (a negative and a white blowout) with a glow, then colour comes
+        back. Two frames in total: any longer and it turns into a nightclub.
+        """
+        ks = []
+        if hitstop:
+            frz = (f"transform:translate({2.5*amp:.1f}px,0) scale(1.012);"
+                   f"filter:contrast(1.5) brightness(1.25)")
+            ks.append((t0, frz + ";animation-timing-function:steps(1,end)"))
+            ks.append((t0 + hitstop, frz))
+        for i in range(1, steps + 1):
+            u = i / steps
+            t = t0 + hitstop + u * dur
+            tr = (1.0 - u) ** 1.6                      # decadimento del trauma
+            e = tr * tr * amp                          # trauma**2: the non-linearity
+            nx = (math.sin(u * 31.7) + math.sin(u * 19.3) * .7 + math.sin(u * 47.1) * .4) / 2.1
+            ny = (math.sin(u * 27.1 + 1.7) + math.sin(u * 41.9 + .6) * .6) / 1.6
+            nr = math.sin(u * 23.3 + 2.4)
+            dx, dy = nx * 15 * e, ny * 7 * e
+            rot, sk = nr * 1.5 * e, nr * 1.9 * e
+            sc = 1 + e * 0.035
+            f = []
+            if chaos:
+                # colour falls and climbs back: nothing survives past the window
+                g = max(0.0, 1.0 - u / 0.55)
+                if g > 0.01:
+                    f.append(f"grayscale({g:.2f})")
+                if i == 3:                       # the negative, a single frame
+                    f.append("invert(1)")
+                elif i == 5:                     # the blowout, with the glow
+                    f.append("brightness(2.1) contrast(.72) "
+                             "drop-shadow(0 0 7px rgba(255,255,255,.6))")
+                elif i == 1:
+                    f.append("brightness(1.45) contrast(1.35) "
+                             "drop-shadow(0 0 5px rgba(255,255,255,.42))")
+            if e > 0.08:
+                f.append(f"blur({e*2.6:.2f}px)")
+                f.append(f"contrast({1+e*1.1:.2f}) brightness({1+e*0.45:.2f})")
+                if chroma:
+                    f.append(f"drop-shadow({e*5:.1f}px 0 rgba(255,0,64,.85)) "
+                             f"drop-shadow({-e*5:.1f}px 0 rgba(0,224,255,.85))")
+            # the two flashes must be hard cuts, not fades
+            hard = ";animation-timing-function:steps(1,end)" if (chaos and i in (3, 5)) else ""
+            ks.append((t, f"transform:translate({dx:.2f}px,{dy:.2f}px) "
+                          f"rotate({rot:.2f}deg) skewX({sk:.2f}deg) scale({sc:.4f});"
+                          f"filter:{' '.join(f) if f else 'none'}" + hard))
+        ks.append((t0 - 0.001, "transform:translate(0,0);filter:none"))
+        ks.append((t0 + hitstop + dur + 0.02, "transform:translate(0,0);filter:none"))
+        return ks
+
+    # FOUR IMPACTS, one per transition. Each has its own amplitude: the wall
+    # coming apart hits harder than a change of act.
+    IMPACTS = [("i0", T_WALL, 1.0),                            # the wall breaks
+               ("i1", ACTW[0][1], 0.78),                       # ring -> river
+               ("i2", (ACTW[1][0] + ACTW[1][1]) / 2, 0.62),    # the middle tear
+               ("i3", T_BACK[0], 0.9)]                         # back behind the wall
+    marks = [(0.0, "transform:translate(0,0);filter:none")]
+    for nm, t0, amp in IMPACTS:
+        marks += impact(nm, t0, amp=amp, dur=0.42 + amp * 0.16, chaos=(nm == "i2"))
+    marks.append((LOOP, "transform:translate(0,0);filter:none"))
+    marks.sort(key=lambda m: m[0])
+    css.append("@keyframes tear{"
+               + "".join(f"{pc(t):.3f}%{{{d}}}" for t, d in marks) + "}")
+    css.append(f".tear{{transform-box:view-box;transform-origin:center;"
+               f"animation:tear {LOOP:g}s linear infinite}}")
+
+    # the wall flashing through the middle gap stays: best moment of the loop
+    G = (0.0, 0.0, 0.0, 0.0)
+    _mid = (ACTW[1][0] + ACTW[1][1]) / 2
+    G = (pc(_mid - 0.02), pc(_mid + 0.06), pc(_mid + 0.20), pc(_mid + 0.30))
 
     # act shells: hard opacity windows, quick cut
     for a in range(NACT):
@@ -304,12 +403,16 @@ text{{font-family:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,monospace
     READ = [
         ("01", "SIGNAL", fmt(S["contrib"]),
          f'PUBLIC CONTRIBUTIONS · 366 DAYS · PEAK {fmt(S["peak"])}'),
-        ("02", "SYSTEMS", f'{S["n_repos"]}',
-         f'SOURCE REPOS, NO FORKS · {len(S["langs"])} LANGUAGES'),
-        ("03", "COMPOUND", fmt(S["stars"]), f'STARS SINCE {S["first_year"]} · TOP {S["top"]["name"].upper()} {fmt(S["top"]["stargazerCount"])}'),
+        ("02", "COMPOUND", "", ""),      # the river brings its own text
     ]
     for a, (num, name, val, sub) in enumerate(READ):
         g = [f'<g class="act{a}">']
+        if not val:                      # act 02: the river draws its own text
+            g.append(txt(LX, 272, num, 17.5, hi[a], 1.4, weight=700, halo=3))
+            g.append(txt(LX + 40, 272, name, 17.5, ink, 3.6, weight=700, halo=3))
+            g.append("</g>")
+            add("".join(g))
+            continue
         g.append(txt(LX, 272, num, 17.5, hi[a], 1.4, weight=700, halo=3))
         g.append(txt(LX + 40, 272, name, 17.5, ink, 3.6, weight=700, halo=3))
         g.append(f'<rect x="{LX}" y="282" width="{2.6*len(val)*13:.0f}" height="0" fill="none"/>')
@@ -322,6 +425,7 @@ text{{font-family:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,monospace
     add(txt(LX + 18, 380, f'ON AIR SINCE 2008 · {S["built"]}', 13, faint, 1.8, halo=2.4))
 
     # ============================================================ the dial
+    add('<g class="act0">')   # the dial belongs to act 01 only
     add(f'<circle cx="{CX}" cy="{CY}" r="{R}" fill="url(#discG)" stroke="{line}" stroke-opacity="{T["line_op"]}" stroke-width="1"/>')
     add(f'<circle cx="{CX}" cy="{CY}" r="{R-10}" fill="none" stroke="{hair}" stroke-opacity="{T["hair_op"]}" stroke-width="1"/>')
 
@@ -341,7 +445,7 @@ text{{font-family:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,monospace
     # progress arc: one full turn per loop, one colour per act
     CIRC = 2 * math.pi * (R + 18)
     css.append(f"@keyframes prog{{0%,{pc(ACTW[0][0]):.2f}%{{stroke-dashoffset:{CIRC:.0f}}}"
-               f"{pc(ACTW[2][1]):.2f}%,100%{{stroke-dashoffset:0}}}}")
+               f"{pc(ACTW[-1][1]):.2f}%,100%{{stroke-dashoffset:0}}}}")
     css.append(f".prog{{stroke-dasharray:{CIRC:.0f};animation:prog {LOOP:g}s linear infinite}}")
     for a in range(NACT):
         t0, t1 = ACTW[a]
@@ -351,6 +455,8 @@ text{{font-family:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,monospace
         add(f'<g class="pcol{a}"><circle class="prog" cx="{CX}" cy="{CY}" r="{R+18}" fill="none" '
             f'stroke="{hi[a]}" stroke-width="2" stroke-linecap="round" '
             f'transform="rotate(-90 {CX} {CY})" filter="url(#gl)"/></g>')
+
+    add("</g>")   # end of the dial chrome
 
     # ------------------------------------------------------------ ACT 1 · SIGNAL
     # The 366 squares are not redrawn as bars: they ARE the bars. Each <rect>
@@ -373,10 +479,10 @@ text{{font-family:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,monospace
             f"@keyframes fly{k}{{"
             f"0%,{pc(out_s):.2f}%{{transform:translate(0,0);opacity:1;fill:var(--c0)}}"
             f"{pc(out_e):.2f}%,{pc(ACTW[0][1]-0.3):.2f}%{{transform:var(--t);opacity:1;fill:var(--c1)}}"
-            f"{pc(ACTW[1][0]+0.2):.2f}%,{G[0]:.1f}%{{transform:var(--t);opacity:.07;fill:var(--c1)}}"
+            f"{pc(ACTW[1][0]+0.2):.2f}%,{G[0]:.1f}%{{transform:var(--t);opacity:0;fill:var(--c1)}}"
             f"{G[1]:.1f}%{{transform:translate(0,0);opacity:.92;fill:var(--c0);animation-timing-function:steps(1,end)}}"
             f"{G[2]:.1f}%{{transform:translate(0,0);opacity:.92;fill:var(--c0)}}"
-            f"{G[3]:.1f}%,{pc(ACTW[2][1]-0.2):.2f}%{{transform:var(--t);opacity:.07;fill:var(--c1)}}"
+            f"{G[3]:.1f}%,{pc(ACTW[-1][1]-0.2):.2f}%{{transform:var(--t);opacity:0;fill:var(--c1)}}"
             f"{pc(back_s):.2f}%{{transform:var(--t);opacity:1}}"
             f"{pc(back_e):.2f}%,100%{{transform:translate(0,0);opacity:1;fill:var(--c0)}}}}")
         css.append(f".fly{k}{{transform-box:fill-box;transform-origin:center;"
@@ -418,138 +524,141 @@ text{{font-family:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,monospace
     g.append("</g>")
     add("".join(g))
 
-    # ----------------------------------------------------------- ACT 2 · SYSTEMS
-    g = [f'<g class="dial1" clip-path="url(#disc)">']
-    # top 6 languages + everything else as OTHER: one sector each, no overlaps
-    ordered = sorted(S["langs"].items(), key=lambda kv: -len(kv[1]))
-    langs, rest = ordered[:6], [r for _, rs in ordered[6:] for r in rs]
-    if rest:
-        langs.append(("OTHER", rest))
-    NH = len(langs)
-    TOTR = sum(len(rs) for _, rs in langs)
-    # the ring stays inside the clip (radius R-6=154) even while the act enters
-    # scaled at 1.04: 144 + half the 17px band = 152.5, with room to spare.
-    RARC, GAP = 144, 2.2
-    stagger("h2", 1, NH, "opacity:0", "opacity:1", dur=0.4, spread=1.6)
-    stagger("q2", 1, NH, "stroke-dashoffset:var(--l);opacity:0", "stroke-dashoffset:0;opacity:1",
-            dur=0.55, spread=1.6)
-    stagger("n2", 1, 12, "transform:scale(0);opacity:0", "transform:scale(1);opacity:1",
-            dur=0.4, spread=1.9, ease="cubic-bezier(.34,1.7,.5,1)")
+    # ------------------------------------------------------------- ACT 2 · RIVER
+    riv = S["river"]
+    nr = len(riv)
+    A0, A1 = ACTW[1]
+    rank = {r["name"]: k for k, r in enumerate(sorted(riv, key=lambda r: -r["s"]))[:RIV_NAMED]} \
+        if False else {r["name"]: k for k, r in enumerate(sorted(riv, key=lambda r: -r["s"])[:RIV_NAMED])}
+    placed, suns = [], []
+    g = [f'<g class="dial1">']
+    for i, rp in enumerate(riv):
+        tot = rp["s"] + rp["f"]
+        u = i / max(nr - 1, 1)                 # position = order of birth
+        x = RX0 + u * (RX1 - RX0)
+        rng = RNG(sum(ord(c) * (k + 3) for k, c in enumerate(rp["name"])))
+        cr = 2.6 + math.sqrt(tot) * 1.62
+        # the height is chosen, not rolled: of nine candidates take the one that
+        # overlaps least with what is already on the river. Without this the big
+        # clusters melt into one blob and you cannot tell where one ends.
+        room = RAMP - min(cr, RAMP * 0.62)
+        best, bp = RCY, 1e9
+        for c in range(9):
+            cand = RCY + (c / 4.0 - 1.0) * room
+            pen = sum(max(0.0, (pr + cr) * 1.05 - math.hypot(abs(px - x), abs(py - cand))) ** 2
+                      for (px, py, pr) in placed[-14:] if abs(px - x) < (pr + cr) * 1.05)
+            pen += (abs(cand - RCY) / max(room, 1)) ** 2 * 120 + rng.next() * 40
+            if pen < bp:
+                best, bp = cand, pen
+        y = best
+        placed.append((x, y, cr))
 
-    def arc_d(r, a0, a1, rev=False):
-        """rev = reversed path, so labels in the lower half are not upside down"""
-        if rev:
-            a0, a1 = a1, a0
-        x0, y0 = pol(r, a0)
-        x1, y1 = pol(r, a1)
-        return (f"M{x0:.1f},{y0:.1f} A{r},{r} 0 {1 if abs(a1-a0) > 180 else 0} "
-                f"{0 if rev else 1} {x1:.1f},{y1:.1f}")
+        pts = []
+        for _ in range(tot):
+            a_ = rng.next() * 2 * math.pi
+            d_ = cr * math.sqrt(rng.uni(0.05, 1.0))
+            pts.append((x + d_ * math.cos(a_), y + d_ * math.sin(a_)))
+        pts.sort(key=lambda q: math.hypot(q[0] - x, q[1] - y))
 
-    # log scale: zero stars sit on the hub, the maximum just inside the ring
-    smax = max(r["stargazerCount"] for r in S["repos"]) or 1
-    RIN, ROUT = 44, RARC - 26
+        t0 = A0 + 0.12 + u * RIV_BUILD
+        k = rank.get(rp["name"])
+        fl = A0 + RIV_FLASH + (k * 0.34 if k is not None else 999)
+        suns.append((x, y, 1.4 + math.log1p(tot) * 0.5, t0, rp["color"], k, fl))
+        for layer, (cnt, col, wdt) in enumerate(((rp["s"], T["riv_star"], 1.8),
+                                                 (rp["f"], T["riv_fork"], 2.4))):
+            if not cnt:
+                continue
+            sub = pts[:cnt] if layer == 0 else pts[rp["s"]:]
+            d = "".join(f"M{px:.0f} {py:.0f}h0" for px, py in sub)
+            cls = f"r{i}_{layer}"
+            kf = [f"0%,{pc(t0):.2f}%{{opacity:0;transform:scale(.45)}}",
+                  f"{pc(t0+0.4):.2f}%{{opacity:1;transform:scale(1);stroke:{T['riv_lit']}}}",
+                  f"{pc(t0+0.85):.2f}%{{opacity:1;stroke:{col}}}"]
+            if k is not None:
+                kf += [f"{pc(fl):.2f}%{{opacity:1;stroke:{col}}}",
+                       f"{pc(fl+0.08):.2f}%{{opacity:1;stroke:{T['riv_lit']};transform:scale(1.05)}}",
+                       f"{pc(fl+0.36):.2f}%{{opacity:1;stroke:{col};transform:scale(1)}}"]
+            kf += [f"{pc(A1-0.45):.2f}%{{opacity:1;stroke:{col}}}",
+                   f"{pc(A1-0.1):.2f}%,100%{{opacity:0;transform:scale(.45)}}"]
+            css.append(f"@keyframes {cls}{{" + "".join(kf) + "}")
+            css.append(f".{cls}{{opacity:0;transform-box:fill-box;transform-origin:center;"
+                       f"animation:{cls} {LOOP:g}s cubic-bezier(.16,1,.3,1) infinite}}")
+            g.append(f'<path class="{cls}" d="{d}" stroke="{col}" stroke-width="{wdt}" '
+                     f'stroke-linecap="round" fill="none"/>')
 
-    def star_r(st):
-        return RIN + (math.log1p(st) / math.log1p(smax)) * (ROUT - RIN)
+    # the sun is the repo itself, coloured by its language (rule from the NORD)
+    for si, (sx, sy, sr, st, col, k, fl) in enumerate(suns):
+        kf = [f"0%,{pc(st):.2f}%{{opacity:0;transform:scale(.2)}}",
+              f"{pc(st+0.26):.2f}%{{opacity:1;transform:scale(1)}}"]
+        if k is not None:
+            kf += [f"{pc(fl):.2f}%{{opacity:1;transform:scale(1)}}",
+                   f"{pc(fl+0.09):.2f}%{{opacity:1;transform:scale(1.9)}}",
+                   f"{pc(fl+0.38):.2f}%{{opacity:1;transform:scale(1)}}"]
+        kf += [f"{pc(A1-0.45):.2f}%{{opacity:1;transform:scale(1)}}",
+               f"{pc(A1-0.1):.2f}%,100%{{opacity:0;transform:scale(.2)}}"]
+        css.append(f"@keyframes rs{si}{{" + "".join(kf) + "}")
+        css.append(f".rs{si}{{opacity:0;transform-box:fill-box;transform-origin:center;"
+                   f"animation:rs{si} {LOOP:g}s cubic-bezier(.2,1.6,.4,1) infinite}}")
+        g.append(f'<circle class="rs{si}" cx="{sx:.0f}" cy="{sy:.0f}" r="{sr:.1f}" fill="{col}"/>')
 
-    # the axis: without it the distance means nothing.
-    # labels go in the gap between two sectors, where no dots live.
-    bounds, acc_a = [], -90.0
-    for _, rs_ in langs:
-        acc_a += 360.0 * len(rs_) / TOTR
-        bounds.append(acc_a)
-    axis_a = min(bounds, key=lambda b: abs(((b - 270) + 180) % 360 - 180))
-    for gv, glab in ((10, "10"), (100, "100"), (1000, "1K")):
-        if gv > smax:
-            continue
-        gr = star_r(gv)
-        g.append(f'<circle class="h20" cx="{CX}" cy="{CY}" r="{gr:.1f}" fill="none" stroke="{line}" '
-                 f'stroke-opacity="{T["line_op"]*0.7:.2f}" stroke-width="1" stroke-dasharray="2 5"/>')
-        lx3, ly3 = pol(gr, axis_a)
-        # rotated along the tangent: they queue up along the radius, never touching
-        rot = axis_a if not (90 < axis_a % 360 <= 270) else axis_a - 180
-        g.append(f'<g transform="rotate({rot:.1f} {lx3:.1f} {ly3:.1f})">'
-                 + txt(lx3, ly3 + 3.5, f"{glab}★", 10, faint, 0.6, "middle", 700, cls="h20", halo=3)
-                 + "</g>")
-
-    cur = -90.0
-    for li, (lang, rs) in enumerate(langs):
-        n = len(rs)
-        sweep = 360.0 * n / TOTR
-        a0, a1 = cur + GAP / 2, cur + sweep - GAP / 2
-        mid = (a0 + a1) / 2
-        L = math.radians(a1 - a0) * RARC
-        # proportional arc: how much that language weighs
-        share = n / max(len(rs2) for _, rs2 in langs)
-        g.append(f'<path class="q2{li}" style="--l:{L:.0f}px;stroke-dasharray:{L:.0f}" d="{arc_d(RARC, a0, a1)}" '
-                 f'fill="none" stroke="{hi[1] if li == 0 else acc[1]}" stroke-width="17" stroke-linecap="butt" '
-                 f'opacity="{0.5 + 0.5*share:.2f}"/>')
-        # every repo is a dot: the angle gives the language, the DISTANCE from the
-        # centre gives the stars. These used to be dots placed just to fill space.
-        rs = sorted(rs, key=lambda r: -r["stargazerCount"])
-        for j, rp in enumerate(rs):
-            frac = 0.5 if n <= 1 else j / (n - 1)
-            aa = a0 + (a1 - a0) * (0.07 + 0.86 * frac)
-            st = rp["stargazerCount"]
-            nx, ny = pol(star_r(st), aa)
-            sz = 1.9 + min(3.8, (st ** 0.42) * 0.46)
-            big = st > 280
-            g.append(f'<circle class="n2{(li*5+j)%12} g" cx="{nx:.1f}" cy="{ny:.1f}" r="{sz:.1f}" '
-                     f'fill="{hi[1] if big else acc[1]}" opacity="{1 if big else 0.66}"'
-                     + (' filter="url(#gl)"' if big else "") + "/>")
-        # label written INSIDE its own arc: collisions become impossible
-        lab = f'{SHORT.get(lang, lang.upper())[:8]} {n}'
-        need = len(lab) * 7.0
-        rev = 30 < (mid % 360) < 210          # metà bassa: percorso invertito, testo dritto
-        if L > need + 8:
-            g.append(f'<path id="lp{li}" d="{arc_d(RARC, a0, a1, rev)}" fill="none"/>'
-                     f'<text class="h2{li}" font-size="10.5" font-weight="700" letter-spacing="1.3" '
-                     f'fill="{T["knock"]}" dominant-baseline="central">'
-                     f'<textPath href="#lp{li}" startOffset="50%" text-anchor="middle">{esc(lab)}</textPath></text>')
-        else:
-            tx, ty = pol(RARC - 24, mid)
-            g.append(txt(tx, ty + 4, lab, 10, mut, 1.0, "middle", 700, cls=f"h2{li}"))
-        cur += sweep
+    # year ticks: where they crowd, that is where the work accelerated
+    last_lab = -999.0
+    for j, yr in enumerate(sorted({r["year"] for r in riv})):
+        u0 = min(i for i, r in enumerate(riv) if r["year"] == yr) / max(nr - 1, 1)
+        tx = RX0 + u0 * (RX1 - RX0)
+        t0 = A0 + 0.12 + u0 * RIV_BUILD
+        show = tx - last_lab > 46
+        if show:
+            last_lab = tx
+        css.append(f"@keyframes rk{j}{{0%,{pc(t0):.2f}%{{opacity:0}}"
+                   f"{pc(t0+0.1):.2f}%,{pc(A1-0.4):.2f}%{{opacity:.7}}"
+                   f"{pc(A1-0.1):.2f}%,100%{{opacity:0}}}}")
+        css.append(f".rk{j}{{opacity:0;animation:rk{j} {LOOP:g}s ease-out infinite}}")
+        g.append(f'<g class="rk{j}"><line x1="{tx:.0f}" y1="{RCY+RAMP+20}" x2="{tx:.0f}" '
+                 f'y2="{RCY+RAMP+29}" stroke="{mut}" stroke-width="1"/>'
+                 + (f'<text x="{tx:.0f}" y="{RCY+RAMP+46}" font-size="14" fill="{mut}" '
+                    f'text-anchor="middle">{yr}</text>' if show else "") + "</g>")
     g.append("</g>")
     add("".join(g))
 
-    # ---------------------------------------------------------- ACT 3 · COMPOUND
-    # spiral: angle = order of birth, radius = CUMULATIVE stars.
-    # the curve accelerates outward exactly when a hit lands.
-    g = [f'<g class="dial2" clip-path="url(#disc)">']
-    rs = sorted(S["repos"], key=lambda r: r["createdAt"])
-    tot = max(sum(r["stargazerCount"] for r in rs), 1)
-    NS = 14
-    stagger("g3", 2, NS, "transform:scale(0);opacity:0", "transform:scale(1);opacity:1",
-            dur=0.5, spread=2.1, ease="cubic-bezier(.34,1.7,.5,1)")
-    stagger("a3", 2, NS, "stroke-dashoffset:var(--l);opacity:0", "stroke-dashoffset:0;opacity:.55",
-            dur=0.5, spread=2.1)
-    TURNS, R0, R1 = 2.5, 44, R - 24
-    cum, prev, seen_year, last_lab = 0, None, set(), -99
-    for i, rp in enumerate(rs):
-        cum += rp["stargazerCount"]
-        year = rp["createdAt"][:4]
-        u = i / max(len(rs) - 1, 1)
-        rr = R0 + ((cum / tot) ** 0.55) * (R1 - R0)
-        x, y = pol(rr, u * 360 * TURNS)
-        k = int(u * (NS - 1))
-        if prev:
-            L = max(math.dist(prev, (x, y)), 0.5)
-            g.append(f'<line class="a3{k}" style="--l:{L:.0f}px;stroke-dasharray:{L:.0f}" '
-                     f'x1="{prev[0]:.1f}" y1="{prev[1]:.1f}" x2="{x:.1f}" y2="{y:.1f}" '
-                     f'stroke="{acc[2]}" stroke-width="1.1"/>')
-        prev = (x, y)
-        st = rp["stargazerCount"]
-        sz = 1.8 + min(8.0, (st ** 0.44) * 0.62)
-        big = st > 250
-        g.append(f'<circle class="g3{k} g" cx="{x:.1f}" cy="{y:.1f}" r="{sz:.1f}" '
-                 f'fill="{hi[2] if big else acc[2]}" opacity="{0.95 if big else 0.62}"'
-                 + (' filter="url(#gl)"' if big else "") + "/>")
-        # no year labels on the spiral: near the centre they collided and dirtied
-        # the drawing. Dates live in the column, where they can be read.
-        seen_year.add(year)
-    g.append("</g>")
-    add("".join(g))
+    # the readout of act 02: the year while it builds, then the names, then the total
+    for j, yr in enumerate(sorted({r["year"] for r in riv})):
+        u0 = min(i for i, r in enumerate(riv) if r["year"] == yr) / max(nr - 1, 1)
+        u1 = min([i for i, r in enumerate(riv) if r["year"] > yr] or [nr - 1]) / max(nr - 1, 1)
+        t0, t1 = A0 + 0.12 + u0 * RIV_BUILD, A0 + 0.12 + u1 * RIV_BUILD
+        css.append(f"@keyframes ry{j}{{0%,{pc(t0):.2f}%{{opacity:0}}"
+                   f"{pc(t0+0.05):.2f}%,{pc(max(t1-0.04, t0+0.1)):.2f}%{{opacity:1}}"
+                   f"{pc(max(t1, t0+0.14)):.2f}%,100%{{opacity:0}}}}")
+        css.append(f".ry{j}{{opacity:0;animation:ry{j} {LOOP:g}s steps(1,end) infinite}}")
+        add(txt(LX, 330, yr, 46, ink, 1, weight=700, cls=f"ry{j}", halo=4))
+
+    for nm, k in sorted(rank.items(), key=lambda kv: kv[1]):
+        rp = next(r for r in riv if r["name"] == nm)
+        t0 = A0 + RIV_FLASH + k * 0.34
+        css.append(f"@keyframes rb{k}{{0%,{pc(t0):.2f}%{{opacity:0;transform:translateY(7px)}}"
+                   f"{pc(t0+0.08):.2f}%{{opacity:1;transform:translateY(0)}}"
+                   f"{pc(t0+0.28):.2f}%{{opacity:1}}"
+                   f"{pc(t0+0.4):.2f}%,100%{{opacity:0;transform:translateY(-6px)}}}}")
+        css.append(f".rb{k}{{opacity:0;animation:rb{k} {LOOP:g}s cubic-bezier(.2,1,.3,1) infinite}}")
+        sz = 30 if len(nm) <= 14 else (24 if len(nm) <= 19 else 20)
+        add(f'<g class="rb{k}">' + txt(LX, 306, nm, sz, ink, 0.5, weight=700, halo=3)
+            + txt(LX, 344, f'{rp["s"]:,}', 26, rp["color"], 1, weight=700, halo=3) + "</g>")
+
+    ts = A0 + RIV_FLASH + RIV_NAMED * 0.34 + 0.1
+    tot_s = sum(r["s"] for r in riv)
+    tot_f = sum(r["f"] for r in riv)
+    css.append(f"@keyframes rt{{0%,{pc(ts):.2f}%{{opacity:0;transform:scale(.93)}}"
+               f"{pc(ts+0.24):.2f}%,{pc(A1-0.35):.2f}%{{opacity:1;transform:scale(1)}}"
+               f"{pc(A1-0.1):.2f}%,100%{{opacity:0;transform:scale(.93)}}}}")
+    css.append(f".rt{{opacity:0;transform-box:fill-box;transform-origin:left center;"
+               f"animation:rt {LOOP:g}s cubic-bezier(.2,1.5,.4,1) infinite}}")
+    add('<g class="rt">'
+        + txt(LX, 322, f"{tot_s:,}", 52, T["riv_star"], 1, weight=700, halo=5)
+        + txt(LX, 348, "STARS", 16, ink, 6, weight=600, halo=3)
+        + txt(LX, 380, f"{tot_f:,}", 24, T["riv_fork"], 1, weight=700, halo=3)
+        + txt(LX + 24 * 0.62 * len(f"{tot_f:,}") + 13, 380, "FORKS", 14, mut, 3, halo=3)
+        + "</g>")
+
 
     add("</g>")   # end of the data phase
     add(SQUARES[0])   # the calendar squares: present in every phase
@@ -559,7 +668,7 @@ text{{font-family:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,monospace
 .hubr{{transform-origin:{CX}px {CY}px;animation:hubr 3s cubic-bezier(.3,0,.2,1) infinite}}
 @keyframes hubr{{0%{{transform:scale(1);opacity:.55}}6%{{transform:scale(1.5);opacity:0}}100%{{transform:scale(1.5);opacity:0}}}}
 """)
-    add('<g class="dp">')
+    add('<g class="dp act0">')
     for a in range(NACT):
         add(f'<circle class="hubr pcol{a}" cx="{CX}" cy="{CY}" r="30" fill="none" stroke="{hi[a]}" stroke-width="1.4"/>')
     add(f'<circle cx="{CX}" cy="{CY}" r="30" fill="{T["disc"]}" fill-opacity="{0.10 if th=="dark" else 0.035}" '
