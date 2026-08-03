@@ -52,8 +52,7 @@ def render(d):
             f"{pc(back_s):.2f}%{{transform:var(--t);opacity:1}}"
             f"{pc(back_e):.2f}%,{pc(T_OUT):.2f}%{{transform:translate(0,0);opacity:1;fill:var(--c0)}}"
             f"{pc(T_OUT+0.45):.2f}%,100%{{transform:translate(0,0);opacity:0;fill:var(--c0)}}}}")
-        css.append(f".fly{k}{{transform-box:fill-box;transform-origin:center;"
-                   f"animation:fly{k} {LOOP:g}s cubic-bezier(.5,0,.2,1) infinite}}")
+        css.append(f".fly{k}{{animation:fly{k} {LOOP:g}s cubic-bezier(.5,0,.2,1) infinite}}")
 
     # the flight is the only moment the filter is on: a gooey pass while they
     # are in the air, off the instant they land. (Filters cost; a filter that
@@ -78,7 +77,7 @@ def render(d):
         ang = i2 * 360 / len(days)
         tx, ty = pol(r0 + h / 2, ang)
         sc = f"translate({tx-cx0:.1f}px,{ty-cy0:.1f}px) rotate({ang:.1f}deg) scale(.24,{h/CELL:.3f})"
-        sq.append(f'<rect class="fly{int(col/COLS*NF)%NF}" x="{cx0-CELL/2:.0f}" y="{cy0-CELL/2:.0f}" '
+        sq.append(f'<rect class="t fly{int(col/COLS*NF)%NF}" x="{cx0-CELL/2:.0f}" y="{cy0-CELL/2:.0f}" '
                   f'width="{CELL}" height="{CELL}" rx="2" fill="{T["cal"][lv]}" '
                   f'style="--t:{sc};--c0:{T["cal"][lv]};--c1:{T["lit"][lv]}"/>')
     sq.append("</g>")

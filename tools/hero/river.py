@@ -83,9 +83,8 @@ def render(d):
                       *((fl, fl + 0.1, fl + nstep) if k is not None else ()),
                       T_BACK[0], T_BACK[0] + 0.5)
             css.append(f"@keyframes {cls}{{" + "".join(kf) + "}")
-            css.append(f".{cls}{{opacity:0;transform-box:fill-box;transform-origin:center;"
-                       f"animation:{cls} {LOOP:g}s cubic-bezier(.16,1,.3,1) infinite}}")
-            g.append(f'<path class="{cls}" d="{d}" stroke="{col}" stroke-width="{wdt}" '
+            css.append(f".{cls}{{opacity:0;animation:{cls} {LOOP:g}s cubic-bezier(.16,1,.3,1) infinite}}")
+            g.append(f'<path class="t {cls}" d="{d}" stroke="{col}" stroke-width="{wdt}" '
                      f'stroke-linecap="round" fill="none"/>')
 
     # the sun is the repo itself, coloured by its language (rule from the NORD)
@@ -104,9 +103,8 @@ def render(d):
         win_check(f"river sun {si}", st, st + 0.26, A1 - 0.45, A1 + 0.35,
                   *((fl, fl + 0.1, fl + nstep) if k is not None else ()), T_BACK[0])
         css.append(f"@keyframes rs{si}{{" + "".join(kf) + "}")
-        css.append(f".rs{si}{{opacity:0;transform-box:fill-box;transform-origin:center;"
-                   f"animation:rs{si} {LOOP:g}s cubic-bezier(.2,1.6,.4,1) infinite}}")
-        g.append(f'<circle class="rs{si}" cx="{sx:.0f}" cy="{sy:.0f}" r="{sr:.1f}" fill="{col}"/>')
+        css.append(f".rs{si}{{opacity:0;animation:rs{si} {LOOP:g}s cubic-bezier(.2,1.6,.4,1) infinite}}")
+        g.append(f'<circle class="t rs{si}" cx="{sx:.0f}" cy="{sy:.0f}" r="{sr:.1f}" fill="{col}"/>')
 
     # year ticks: where they crowd, that is where the work accelerated
     last_lab = -999.0

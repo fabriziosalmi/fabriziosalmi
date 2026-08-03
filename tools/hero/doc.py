@@ -76,10 +76,6 @@ class Doc:
                      f'<stop offset="100%" stop-color="{c}" stop-opacity="0"/></radialGradient>')
         d.append(f'<radialGradient id="discG"><stop offset="0%" stop-color="{T["disc"]}" stop-opacity="{T["disc_op"]*2.2:.3f}"/>'
                  f'<stop offset="100%" stop-color="{T["disc"]}" stop-opacity="{T["disc_op"]:.3f}"/></radialGradient>')
-        d.append(f'<linearGradient id="shine" x1="0" y1="0" x2="1" y2="0">'
-                 f'<stop offset="0%" stop-color="{ink}" stop-opacity="0"/>'
-                 f'<stop offset="50%" stop-color="{ink}" stop-opacity="{0.9 if th=="dark" else 0.55}"/>'
-                 f'<stop offset="100%" stop-color="{ink}" stop-opacity="0"/></linearGradient>')
         d.append(f'<filter id="gl" x="-90%" y="-90%" width="280%" height="280%">'
                  f'<feGaussianBlur stdDeviation="{T["glow"]}" result="b"/>'
                  f'<feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>')
@@ -89,11 +85,35 @@ class Doc:
         # the air. feGaussianBlur softens them, feColorMatrix drives the alpha
         # back up so the blobs re-harden and fuse like mercury; the blur is
         # directional (7 across, 2 down) so the flight reads as speed, not fog.
-        d.append('<filter id="melt" x="-25%" y="-25%" width="150%" height="150%">'
+        d.append('<filter id="melt" x="-10%" y="-14%" width="120%" height="128%">'
                  '<feGaussianBlur in="SourceGraphic" stdDeviation="4.5 1.4" result="b"/>'
                  '<feColorMatrix in="b" type="matrix" result="g" values="'
                  '1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 28 -12"/>'
                  '<feBlend in="SourceGraphic" in2="g"/></filter>')
+        # The glint: a narrow band of light that crosses a piece of type once.
+        # Same gradient for every statement - what varies is when it enters, how
+        # wide it is and which way it travels, so no two are identical and none
+        # of them argue with each other.
+        d.append('<linearGradient id="glint" x1="0" y1="0" x2="1" y2="0">'
+                 '<stop offset="0%" stop-color="#fff" stop-opacity="0"/>'
+                 '<stop offset="42%" stop-color="#fff" stop-opacity="0.55"/>'
+                 '<stop offset="52%" stop-color="#fff" stop-opacity="0.95"/>'
+                 '<stop offset="62%" stop-color="#fff" stop-opacity="0.5"/>'
+                 '<stop offset="100%" stop-color="#fff" stop-opacity="0"/></linearGradient>')
+
+        # Field warp for the exits. Low baseFrequency (0.004) gives long smooth
+        # waves instead of noise, so it reads as a lens bending rather than as
+        # static; the blur is directional so the type smears the way it leaves.
+        for wi, (bf, sc, bl, sd) in enumerate(((".0042 .0031", 34, "9 2", 5),
+                                               (".0035 .0048", 41, "13 3", 17),
+                                               (".0051 .0026", 28, "7 4", 23))):
+            d.append(f'<filter id="warp{wi}" x="-16%" y="-20%" width="132%" height="140%">'
+                     f'<feTurbulence type="fractalNoise" baseFrequency="{bf}" numOctaves="1" '
+                     f'seed="{sd}" result="t"/>'
+                     f'<feDisplacementMap in="SourceGraphic" in2="t" scale="{sc}" '
+                     f'xChannelSelector="R" yChannelSelector="G" result="w"/>'
+                     f'<feGaussianBlur in="w" stdDeviation="{bl}"/></filter>')
+
         # Liquid displacement for the tear. baseFrequency and scale cannot be
         # animated from CSS, so three fixed states are baked and switched at the
         # hard-cut samples: the distortion moves without a line of JavaScript.
@@ -104,21 +124,9 @@ class Doc:
                      f'<feTurbulence type="fractalNoise" baseFrequency="{bf}" numOctaves="2" '
                      f'seed="{sd}" result="t"/>'
                      f'<feDisplacementMap in="SourceGraphic" in2="t" scale="{sc}" '
-                     f'xChannelSelector="R" yChannelSelector="G"/></filter>')        # RGB split for the tear: the three channels come apart by a few pixels.
-        # screen on dark, multiply on light, or the aberration washes the page out.
-        # on white, multiply is the physically right blend but it muddies fast:
-        # half the offset there, or the small type turns to porridge
-        bl = "screen" if th == "dark" else "multiply"
-        dxs = 4 if th == "dark" else 2
-        d.append(
-            '<filter id="rgb" x="-5%" y="-5%" width="110%" height="110%">'
-            '<feColorMatrix in="SourceGraphic" type="matrix" values="1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0" result="r"/>'
-            f'<feOffset in="r" dx="-{dxs}" dy="0" result="ro"/>'
-            '<feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0" result="g"/>'
-            '<feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0" result="b"/>'
-            f'<feOffset in="b" dx="{dxs}" dy="0" result="bo"/>'
-            f'<feBlend in="ro" in2="g" mode="{bl}" result="rg"/>'
-            f'<feBlend in="rg" in2="bo" mode="{bl}"/></filter>')
+                     f'xChannelSelector="R" yChannelSelector="G"/></filter>')        # Field warp for the exits. Low baseFrequency (0.004) gives long smooth
+        # waves instead of noise, so it reads as a lens bending rather than as
+        # static; the blur is directional so the type smears the way it leaves.
         d.append(f'<clipPath id="disc"><circle cx="{CX}" cy="{CY}" r="{R-6}"/></clipPath>')
         add("".join(d))
 
@@ -127,7 +135,7 @@ class Doc:
         css.append(f"""
 text{{font-family:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,monospace}}
 .wallui text{{font-family:{SANS}}}
-.g{{transform-box:fill-box;transform-origin:center}}
+.t{{transform-box:fill-box;transform-origin:center}}
 .spin{{transform-origin:{CX}px {CY}px;animation:spin 150s linear infinite}}
 .spinf{{transform-origin:{CX}px {CY}px;animation:spin 26s linear infinite}}
 @keyframes spin{{to{{transform:rotate(360deg)}}}}
