@@ -3,7 +3,7 @@
   "user": {
    "contributionsCollection": {
     "contributionCalendar": {
-     "totalContributions": 13123,
+     "totalContributions": 13066,
      "weeks": [
       {
        "contributionDays": [
@@ -1793,8 +1793,8 @@
          "date": "2026-06-19"
         },
         {
-         "contributionCount": 12,
-         "contributionLevel": "FIRST_QUARTILE",
+         "contributionCount": 0,
+         "contributionLevel": "NONE",
          "date": "2026-06-20"
         }
        ]
@@ -1802,17 +1802,17 @@
       {
        "contributionDays": [
         {
-         "contributionCount": 8,
-         "contributionLevel": "FIRST_QUARTILE",
+         "contributionCount": 0,
+         "contributionLevel": "NONE",
          "date": "2026-06-21"
         },
         {
-         "contributionCount": 35,
+         "contributionCount": 10,
          "contributionLevel": "FIRST_QUARTILE",
          "date": "2026-06-22"
         },
         {
-         "contributionCount": 10,
+         "contributionCount": 6,
          "contributionLevel": "FIRST_QUARTILE",
          "date": "2026-06-23"
         },
@@ -1827,7 +1827,7 @@
          "date": "2026-06-25"
         },
         {
-         "contributionCount": 114,
+         "contributionCount": 109,
          "contributionLevel": "SECOND_QUARTILE",
          "date": "2026-06-26"
         },
@@ -2041,7 +2041,7 @@
          "date": "2026-08-02"
         },
         {
-         "contributionCount": 103,
+         "contributionCount": 100,
          "contributionLevel": "SECOND_QUARTILE",
          "date": "2026-08-03"
         }
