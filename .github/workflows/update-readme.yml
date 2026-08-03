@@ -1,39 +1,36 @@
-name: Update README
+name: Mirror repo index
 
-# This workflow automatically updates the README.md file daily at 2:00 AM UTC
-# by cloning it from the fabriziosalmi/repos repository.
-# It can also be triggered manually using the "Run workflow" button in GitHub Actions.
+# This workflow used to overwrite README.md every night with the copy pulled
+# from fabriziosalmi/repos, wiping anything written by hand, hero included.
+# The copy now lands in REPOS.md and the README belongs to whoever writes it.
 
 on:
   schedule:
-    # Run daily at 2:00 AM UTC
     - cron: '0 2 * * *'
-  workflow_dispatch: # Manual trigger support
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
-  update-readme:
+  mirror:
     runs-on: ubuntu-latest
-    
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          
-      - name: Download latest README
+      - uses: actions/checkout@v4
+
+      - name: Download repo index
         run: |
-          curl -o README.md https://raw.githubusercontent.com/fabriziosalmi/repos/refs/heads/main/README.md
-          
-      - name: Check for changes
-        id: check_changes
+          curl -fsSL -o REPOS.md \
+            https://raw.githubusercontent.com/fabriziosalmi/repos/refs/heads/main/README.md
+
+      - name: Commit if changed
         run: |
-          git diff --quiet README.md || echo "changed=true" >> $GITHUB_OUTPUT
-          
-      - name: Commit and push changes
-        if: steps.check_changes.outputs.changed == 'true'
-        run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git add README.md
-          git commit -m "chore: update README.md from repos repository"
-          git push
+          git config user.name  'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add REPOS.md
+          if git diff --cached --quiet; then
+            echo "index unchanged"
+          else
+            git commit -m "chore: update REPOS.md from fabriziosalmi/repos"
+            git push
+          fi

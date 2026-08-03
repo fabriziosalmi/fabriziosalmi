@@ -1,0 +1,72 @@
+name: Hero
+
+# Every night: re-read the public profile data, regenerate hero-dark.svg and
+# hero-light.svg, and commit only when the drawing actually changed.
+
+on:
+  schedule:
+    - cron: '17 4 * * *'      # 04:17 UTC, away from the Actions rush hour
+  workflow_dispatch:
+  push:
+    paths:
+      - 'tools/**'
+      - '.github/workflows/hero.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hero
+  cancel-in-progress: false
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Fetch profile data
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 tools/fetch_profile.py fabriziosalmi data/profile.json
+
+      - name: Render hero
+        run: python3 tools/render_hero.py data/profile.json .
+
+      # a malformed SVG shows up as a broken image on the profile: better to
+      # fail the job here than to hear about it from visitors.
+      - name: Validate output
+        run: |
+          python3 - <<'EOF'
+          import xml.dom.minidom, sys
+          for f in ("hero-dark.svg", "hero-light.svg"):
+              xml.dom.minidom.parse(f)
+              t = open(f, encoding="utf-8").read()
+              assert "@keyframes act0" in t, f"{f}: animations missing"
+              assert "prefers-reduced-motion" in t, f"{f}: static fallback missing"
+              assert len(t) > 50_000, f"{f}: too small, {len(t)} bytes"
+              print(f, "ok", len(t), "byte")
+          EOF
+
+      - name: Commit if changed
+        run: |
+          git config user.name  'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+
+          if git diff --quiet -- hero-dark.svg hero-light.svg; then
+            echo "drawing identical to yesterday: leaving it alone"
+            exit 0
+          fi
+
+          # GitHub serves images behind camo's cache: bumping ?v= only when the
+          # drawing changes shows the new version right away, without filling the
+          # history with an empty commit a day.
+          sed -i -E "s/hero-(dark|light)\.svg\?v=[0-9]+/hero-\1.svg?v=$(date -u +%Y%m%d)/g" README.md
+
+          git add data/profile.json hero-dark.svg hero-light.svg README.md
+          git commit -m "chore(hero): regenerated from today's data"
+          git push
