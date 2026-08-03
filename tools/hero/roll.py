@@ -6,9 +6,12 @@ less than the one before, until the list stops being readable and becomes a
 texture — which is the honest way to show a number this size. You can read the
 first ones; by the end you can only feel how many there are.
 
-The ones that earned something light up in the colour of their own language,
-weight and all. The ones that did not stay grey and thin. Nobody is hidden, and
-nothing else is on screen while a name is: the frame belongs to one thing.
+The ones that earned something come up in full white and full weight; the ones
+that did not stay grey and thin. No language colours here — fifteen hues in a
+three-second run reads as decoration, and the language already says what it has
+to say in the river, on the suns, where it carries information instead of
+sparkle. Nothing else is on screen while a name is: the frame belongs to one
+thing at a time.
 
 The cadence is a power law, not a constant step: t(i) = T·(i/n)^0.62 spaces the
 early names apart and packs the late ones, so the acceleration is felt rather
@@ -35,7 +38,6 @@ def render(d):
     for i, rp in enumerate(repos):
         nm = rp["name"]
         lit = rp["stargazerCount"] > 0 or rp["forkCount"] > 0
-        col = (rp["primaryLanguage"] or {}).get("color") or mut
         # power law: the early names breathe, the late ones stack up
         a = t0 + span * (i / n) ** 0.62
         b = t0 + span * ((i + 1) / n) ** 0.62
@@ -57,7 +59,7 @@ def render(d):
         # beside it would be a second thing on screen, and the frame belongs to
         # one thing at a time.
         SAYS.append(f'<g class="rl{i}">'
-                    + txt(W / 2, 214, nm, sz, col if lit else faint, -0.5, "middle",
+                    + txt(W / 2, 214, nm, sz, ink if lit else faint, -0.5, "middle",
                           800 if lit else 500, halo=5, face=DISPLAY)
                     + "</g>")
 

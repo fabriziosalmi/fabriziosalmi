@@ -45,16 +45,18 @@ GRID_W, GRID_H = COLS * PITCH - 3, ROWS * PITCH - 3
 WALL_X, WALL_Y = 86, 120         # panel corner
 PAD, WD_COL, MO_ROW = 16, 30, 20
 GX, GY = WALL_X + PAD + WD_COL, WALL_Y + PAD + MO_ROW
-SANS = ('-apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", '
-        'Helvetica, Arial, sans-serif')
+SANS = ("-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', "
+        "Helvetica, Arial, sans-serif")
 
 # Two voices, and the split is semantic, not decorative:
 #   mono    -> the terminal and GitHub's own chrome, where mono means something
 #   display -> everything the visitor is meant to read, in the system grotesque
 # Display type is set the modern way: very large, very tight, very heavy, with
 # the label under it small and widely tracked. Mono at 108px is just wide.
-DISPLAY = ('-apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", '
-           '"Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif')
+# single quotes inside: this string ends up in a style="" attribute, and a
+# double quote in there closes the attribute and breaks the whole document
+DISPLAY = ("-apple-system, BlinkMacSystemFont, 'Segoe UI Variable Display', "
+           "'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif")
 
 # names too long to fit inside a sector
 SHORT = {"JavaScript": "JS", "TypeScript": "TS", "Jupyter Notebook": "NOTEBOOK", "Dockerfile": "DOCKER",

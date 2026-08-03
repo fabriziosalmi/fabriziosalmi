@@ -11,6 +11,9 @@ the ones circulating in blog posts are years out of date."""
 #   - large text carries a halo of the opposite tone (paint-order), invisible on
 #     the intended background and a lifesaver on the wrong one.
 # Net effect: the wrong variant looks worse, never unreadable.
+# Display type is set in pure white and pure black, not in GitHub's greys.
+# Raising the contrast of the largest thing on screen costs nothing and is the
+# cheapest luxury signal there is; the greys stay for everything secondary.
 NEUTRAL = "#7d8590"
 
 THEMES = {
@@ -20,7 +23,7 @@ THEMES = {
         # vanishes as a 2px spoke, so the squares ignite once they fly
         lit=["#30363d", "#2ea043", "#56d364", "#7ee787", "#aff5b4"],
         ui_border="#3d444d", ui_mut="#9198a1", ui_fg="#f0f6fc",
-        ink="#f0f6fc", mut="#9198a1", faint="#7d8590", line=NEUTRAL, hair=NEUTRAL,
+        ink="#ffffff", mut="#9198a1", faint="#7d8590", line=NEUTRAL, hair=NEUTRAL,
         line_op=0.42, hair_op=0.20,
         disc="#ffffff", disc_op=0.022, warm="#e3b341", knock="#0d1117",
         halo="#010409", halo_op=0.55,
@@ -33,7 +36,7 @@ THEMES = {
         cal=["#eff2f5", "#aceebb", "#4ac26b", "#2da44e", "#116329"],
         lit=["#d0d7de", "#2da44e", "#116329", "#0b4a22", "#04310f"],
         ui_border="#d1d9e0", ui_mut="#59636e", ui_fg="#1f2328",
-        ink="#1f2328", mut="#636c76", faint="#6e7681", line=NEUTRAL, hair=NEUTRAL,
+        ink="#000000", mut="#636c76", faint="#6e7681", line=NEUTRAL, hair=NEUTRAL,
         line_op=0.42, hair_op=0.22,
         disc="#000000", disc_op=0.018, warm="#9a6700", knock="#ffffff",
         halo="#ffffff", halo_op=0.72,

@@ -37,7 +37,10 @@ class Doc:
         T = self.T
         c = f' class="{cls}"' if cls else ""
         o = f' opacity="{op}"' if op is not None else ""
-        ff = f' font-family=\'{face}\'' if face else ""
+        # inline style, not a presentation attribute: the base rule
+        # text{font-family:mono} is CSS and beats any attribute, which is how
+        # the display face silently never applied at all.
+        ff = f' style="font-family:{face}"' if face else ""
         h = (f' paint-order="stroke" stroke="{T["halo"]}" stroke-opacity="{T["halo_op"]}" '
              f'stroke-width="{halo}" stroke-linejoin="round"' if halo else "")
         return (f'<text{c} x="{x:.1f}" y="{y:.1f}" font-size="{size}" fill="{fill or self.mut}" '
