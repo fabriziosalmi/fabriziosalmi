@@ -23,11 +23,12 @@ LX = 56                          # left column
 # The loop is a match cut: it opens on a pixel-accurate replica of GitHub's own
 # contribution panel, breaks it, flies the data out of the frame, and puts every
 # square back where it was. Seconds, not percentages, so the beats stay readable.
-LOOP = 15.0
-T_WALL = 2.4                     # the wall holds still, long enough to be believed
-T_OUT = 1.2                      # the break
-ACTW = [(3.6, 6.5), (6.9, 12.2)]   # 01 the ring · 02 the river
-T_BACK = (12.5, 13.9)              # everything returns behind the wall
+LOOP = 23.0
+T_TERM = 2.2                     # the terminal types, then the wall materialises
+T_WALL = 4.6                     # the wall holds still, long enough to be believed
+T_OUT = 21.2                     # and the terminal comes back to say what happens next
+ACTW = [(5.8, 10.3), (10.7, 19.4)]  # 01 the ring · 02 the river
+T_BACK = (19.6, 21.0)               # everything returns behind the wall
 NACT = 2
 
 # The river: the galaxy of demos/galaxy straightened out for a letterbox frame.
@@ -37,7 +38,7 @@ NACT = 2
 # corners and clips at the edges.
 RX0, RX1 = 466, 886
 RCY, RAMP = 196, 84
-RIV_BUILD, RIV_FLASH, RIV_NAMED = 2.6, 3.3, 4
+RIV_BUILD, RIV_FLASH, RIV_NAMED = 3.8, 4.4, 6
 
 # GitHub's calendar, measured from the real thing: 53 columns, 10px cells,
 # 13px pitch, and the palettes lifted from GitHub's own theme stylesheets
@@ -148,6 +149,7 @@ def load(path):
         top=sorted(repos, key=lambda r: -r["stargazerCount"])[0],
         first_year=min(r["createdAt"] for r in repos)[:4],
         peak=max(d["contributionCount"] for d in days),
+        active_days=sum(1 for d in days if d["contributionCount"] > 0),
         # the river: only repos with at least one star or one fork, oldest first
         river=sorted(
             [{"name": x["name"], "s": x["stargazerCount"], "f": x["forkCount"],
@@ -222,6 +224,15 @@ def build(S, th, T):
         f'<feBlend in="rg" in2="bo" mode="{bl}"/></filter>')
     d.append(f'<clipPath id="disc"><circle cx="{CX}" cy="{CY}" r="{R-6}"/></clipPath>')
     add("".join(d))
+
+    def win_check(label, *ts):
+        """Keyframe times must be non-decreasing. CSS sorts keyframes by
+        percentage, so a window that closes before it opens does not fail -
+        it silently draws two things on top of each other."""
+        for i in range(len(ts) - 1):
+            assert ts[i] <= ts[i + 1] + 1e-9, (
+                f"{label}: inverted window, {ts[i]:.2f}s comes after {ts[i+1]:.2f}s")
+        return True
 
     css.append(f"""
 text{{font-family:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,monospace}}
@@ -365,16 +376,20 @@ text{{font-family:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,monospace
     css.append(f".dp{{opacity:0;animation:dp {LOOP:g}s ease-in-out infinite}}")
     # the panel labels do the exact opposite
     css.append(
-        f"@keyframes wallui{{0%,{pc(T_WALL):.2f}%{{opacity:1}}"
+        f"@keyframes wallui{{0%,{pc(T_TERM):.2f}%{{opacity:0}}"
+        f"{pc(T_TERM+0.35):.2f}%,{pc(T_WALL):.2f}%{{opacity:1}}"
         f"{pc(T_WALL+0.5):.2f}%,{pc(T_BACK[1]-0.5):.2f}%{{opacity:0}}"
-        f"{pc(T_BACK[1]):.2f}%,100%{{opacity:1}}}}")
+        f"{pc(T_BACK[1]):.2f}%,{pc(T_OUT):.2f}%{{opacity:1}}"
+        f"{pc(T_OUT+0.45):.2f}%,100%{{opacity:0}}}}")
     css.append(f".wallui{{animation:wallui {LOOP:g}s ease-in-out infinite}}")
     # The frame outlives its own labels: it stays up while the data flies out of
     # it, which is the whole point of a frame-breaking shot.
     css.append(
-        f"@keyframes wallframe{{0%,{pc(T_WALL+0.6):.2f}%{{opacity:1}}"
+        f"@keyframes wallframe{{0%,{pc(T_TERM):.2f}%{{opacity:0}}"
+        f"{pc(T_TERM+0.3):.2f}%,{pc(T_WALL+0.6):.2f}%{{opacity:1}}"
         f"{pc(ACTW[0][0]+0.4):.2f}%,{pc(T_BACK[0]-0.3):.2f}%{{opacity:0}}"
-        f"{pc(T_BACK[1]-0.8):.2f}%,100%{{opacity:1}}}}")
+        f"{pc(T_BACK[1]-0.8):.2f}%,{pc(T_OUT):.2f}%{{opacity:1}}"
+        f"{pc(T_OUT+0.45):.2f}%,100%{{opacity:0}}}}")
     css.append(f".wallframe{{animation:wallframe {LOOP:g}s ease-in-out infinite}}")
 
     add('<g class="dp">')
@@ -385,44 +400,44 @@ text{{font-family:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,monospace
             f'<circle cx="{LX+120}" cy="300" r="150" fill="url(#au{a})" filter="url(#soft)" opacity="0.45"/></g>')
 
     # ============================================================ left column
-    add(f'<g class="spinf" style="transform-origin:{LX+9}px 46px"><text x="{LX+9}" y="46" font-size="19" '
-        f'fill="{T["warm"]}" text-anchor="middle" dominant-baseline="central">꩜</text></g>')
-    add(txt(LX + 28, 51, "INDEPENDENT RESEARCH · GENOVA, IT", 14, mut, 2.8, weight=700, halo=2.6))
+
 
     add(f'<clipPath id="nc"><text x="{LX}" y="128" font-size="56" font-weight="700" letter-spacing="2">FABRIZIO</text>'
         f'<text x="{LX}" y="186" font-size="56" font-weight="700" letter-spacing="2">SALMI</text></clipPath>')
     add(txt(LX, 128, "FABRIZIO", 56, ink, 2, weight=700, halo=5))
     add(txt(LX, 186, "SALMI", 56, ink, 2, weight=700, halo=5))
     add(f'<g clip-path="url(#nc)"><rect class="shim" x="-300" y="80" width="300" height="120" fill="url(#shine)" opacity="0.9"/></g>')
-    add(txt(LX + 2, 216, "INFRASTRUCTURE × SECURITY × AI AGENCY", 14, mut, 2.4, halo=2.6))
+    add(f'<g class="spinf" style="transform-origin:{LX+9}px 218px"><text x="{LX+9}" y="218" '
+        f'font-size="20" fill="{T["warm"]}" text-anchor="middle" dominant-baseline="central">꩜</text></g>')
+    add(txt(LX + 26, 224, "INFRASTRUCTURE × SECURITY × AI AGENCY", 18, mut, 0.7, halo=3))
 
     # divider
-    add(f'<line x1="{LX}" y1="240" x2="{LX+400}" y2="240" stroke="{hair}" stroke-opacity="{T["hair_op"]}" stroke-width="1"/>')
+    add(f'<line x1="{LX}" y1="252" x2="{LX+400}" y2="252" stroke="{hair}" stroke-opacity="{T["hair_op"]}" stroke-width="1"/>')
 
-    # ---- current reading (changes with the act)
-    READ = [
-        ("01", "SIGNAL", fmt(S["contrib"]),
-         f'PUBLIC CONTRIBUTIONS · 366 DAYS · PEAK {fmt(S["peak"])}'),
-        ("02", "COMPOUND", "", ""),      # the river brings its own text
+    # ---- the facts: one at a time, big. A subtitle at 13px is decoration;
+    #      a number at 54px is the message.
+    A0r, A1r = ACTW[0]
+    FACTS = [
+        (A0r + 0.30, A0r + 1.85, fmt(S["contrib"]), "PUBLIC CONTRIBUTIONS", hi[0]),
+        (A0r + 1.85, A0r + 3.10, str(S["active_days"]), "DAYS OUT OF 366", hi[0]),
+        (A0r + 3.10, A1r - 0.15, fmt(S["peak"]), "PEAK IN ONE DAY", hi[0]),
     ]
-    for a, (num, name, val, sub) in enumerate(READ):
-        g = [f'<g class="act{a}">']
-        if not val:                      # act 02: the river draws its own text
-            g.append(txt(LX, 272, num, 17.5, hi[a], 1.4, weight=700, halo=3))
-            g.append(txt(LX + 40, 272, name, 17.5, ink, 3.6, weight=700, halo=3))
-            g.append("</g>")
-            add("".join(g))
-            continue
-        g.append(txt(LX, 272, num, 17.5, hi[a], 1.4, weight=700, halo=3))
-        g.append(txt(LX + 40, 272, name, 17.5, ink, 3.6, weight=700, halo=3))
-        g.append(f'<rect x="{LX}" y="282" width="{2.6*len(val)*13:.0f}" height="0" fill="none"/>')
-        g.append(txt(LX, 322, val, 42, hi[a], 1.0, weight=700, halo=4.5))
-        g.append(txt(LX, 344, sub, 13, faint, 1.5, halo=2.4))
-        g.append("</g>")
-        add("".join(g))
+    for fi, (t0, t1, big, lab, col) in enumerate(FACTS):
+        win_check(f"fact {fi}", t0, t0 + 0.16, t1 - 0.12, t1)
+        css.append(f"@keyframes f{fi}{{0%,{pc(t0):.2f}%{{opacity:0;transform:translateY(9px)}}"
+                   f"{pc(t0+0.16):.2f}%{{opacity:1;transform:translateY(0)}}"
+                   f"{pc(t1-0.12):.2f}%{{opacity:1}}"
+                   f"{pc(t1):.2f}%,100%{{opacity:0;transform:translateY(-7px)}}}}")
+        css.append(f".f{fi}{{opacity:0;animation:f{fi} {LOOP:g}s cubic-bezier(.2,1,.3,1) infinite}}")
+        add(f'<g class="f{fi}">' + txt(LX, 330, big, 54, col, 1, weight=700, halo=5)
+            + txt(LX, 362, lab, 20, ink, 3.4, weight=600, halo=3) + "</g>")
 
-    add(f'<circle class="blink" cx="{LX+5}" cy="376" r="3.2" fill="{T["warm"]}"/>')
-    add(txt(LX + 18, 380, f'ON AIR SINCE 2008 · {S["built"]}', 13, faint, 1.8, halo=2.4))
+    # the act marker stays, one line, big enough to read on a phone
+    for a, (num, name) in enumerate((("01", "SIGNAL"), ("02", "COMPOUND"))):
+        g = [f'<g class="act{a}">',
+             txt(LX, 286, num, 22, hi[a], 1.4, weight=700, halo=3),
+             txt(LX + 48, 286, name, 22, ink, 3.6, weight=700, halo=3), "</g>"]
+        add("".join(g))
 
     # ============================================================ the dial
     add('<g class="act0">')   # the dial belongs to act 01 only
@@ -477,14 +492,16 @@ text{{font-family:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,monospace
         back_e = back_s + 0.75
         css.append(
             f"@keyframes fly{k}{{"
-            f"0%,{pc(out_s):.2f}%{{transform:translate(0,0);opacity:1;fill:var(--c0)}}"
+            f"0%,{pc(T_TERM):.2f}%{{transform:translate(0,0);opacity:0;fill:var(--c0)}}"
+            f"{pc(T_TERM+0.35):.2f}%,{pc(out_s):.2f}%{{transform:translate(0,0);opacity:1;fill:var(--c0)}}"
             f"{pc(out_e):.2f}%,{pc(ACTW[0][1]-0.3):.2f}%{{transform:var(--t);opacity:1;fill:var(--c1)}}"
             f"{pc(ACTW[1][0]+0.2):.2f}%,{G[0]:.1f}%{{transform:var(--t);opacity:0;fill:var(--c1)}}"
             f"{G[1]:.1f}%{{transform:translate(0,0);opacity:.92;fill:var(--c0);animation-timing-function:steps(1,end)}}"
             f"{G[2]:.1f}%{{transform:translate(0,0);opacity:.92;fill:var(--c0)}}"
             f"{G[3]:.1f}%,{pc(ACTW[-1][1]-0.2):.2f}%{{transform:var(--t);opacity:0;fill:var(--c1)}}"
             f"{pc(back_s):.2f}%{{transform:var(--t);opacity:1}}"
-            f"{pc(back_e):.2f}%,100%{{transform:translate(0,0);opacity:1;fill:var(--c0)}}}}")
+            f"{pc(back_e):.2f}%,{pc(T_OUT):.2f}%{{transform:translate(0,0);opacity:1;fill:var(--c0)}}"
+            f"{pc(T_OUT+0.45):.2f}%,100%{{transform:translate(0,0);opacity:0;fill:var(--c0)}}}}")
         css.append(f".fly{k}{{transform-box:fill-box;transform-origin:center;"
                    f"animation:fly{k} {LOOP:g}s cubic-bezier(.5,0,.2,1) infinite}}")
 
@@ -562,7 +579,7 @@ text{{font-family:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,monospace
 
         t0 = A0 + 0.12 + u * RIV_BUILD
         k = rank.get(rp["name"])
-        fl = A0 + RIV_FLASH + (k * 0.34 if k is not None else 999)
+        fl = A0 + RIV_FLASH + (k * 0.45 if k is not None else 999)
         suns.append((x, y, 1.4 + math.log1p(tot) * 0.5, t0, rp["color"], k, fl))
         for layer, (cnt, col, wdt) in enumerate(((rp["s"], T["riv_star"], 1.8),
                                                  (rp["f"], T["riv_fork"], 2.4))):
@@ -616,7 +633,7 @@ text{{font-family:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,monospace
         css.append(f".rk{j}{{opacity:0;animation:rk{j} {LOOP:g}s ease-out infinite}}")
         g.append(f'<g class="rk{j}"><line x1="{tx:.0f}" y1="{RCY+RAMP+20}" x2="{tx:.0f}" '
                  f'y2="{RCY+RAMP+29}" stroke="{mut}" stroke-width="1"/>'
-                 + (f'<text x="{tx:.0f}" y="{RCY+RAMP+46}" font-size="14" fill="{mut}" '
+                 + (f'<text x="{tx:.0f}" y="{RCY+RAMP+48}" font-size="17" fill="{mut}" '
                     f'text-anchor="middle">{yr}</text>' if show else "") + "</g>")
     g.append("</g>")
     add("".join(g))
@@ -630,33 +647,34 @@ text{{font-family:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,monospace
                    f"{pc(t0+0.05):.2f}%,{pc(max(t1-0.04, t0+0.1)):.2f}%{{opacity:1}}"
                    f"{pc(max(t1, t0+0.14)):.2f}%,100%{{opacity:0}}}}")
         css.append(f".ry{j}{{opacity:0;animation:ry{j} {LOOP:g}s steps(1,end) infinite}}")
-        add(txt(LX, 330, yr, 46, ink, 1, weight=700, cls=f"ry{j}", halo=4))
+        add(txt(LX, 336, yr, 58, ink, 1, weight=700, cls=f"ry{j}", halo=5))
 
     for nm, k in sorted(rank.items(), key=lambda kv: kv[1]):
         rp = next(r for r in riv if r["name"] == nm)
-        t0 = A0 + RIV_FLASH + k * 0.34
+        t0 = A0 + RIV_FLASH + k * 0.45
+        win_check(f"river name {k}", t0, t0 + 0.08, t0 + 0.28, t0 + 0.4, A1)
         css.append(f"@keyframes rb{k}{{0%,{pc(t0):.2f}%{{opacity:0;transform:translateY(7px)}}"
                    f"{pc(t0+0.08):.2f}%{{opacity:1;transform:translateY(0)}}"
                    f"{pc(t0+0.28):.2f}%{{opacity:1}}"
                    f"{pc(t0+0.4):.2f}%,100%{{opacity:0;transform:translateY(-6px)}}}}")
         css.append(f".rb{k}{{opacity:0;animation:rb{k} {LOOP:g}s cubic-bezier(.2,1,.3,1) infinite}}")
-        sz = 30 if len(nm) <= 14 else (24 if len(nm) <= 19 else 20)
-        add(f'<g class="rb{k}">' + txt(LX, 306, nm, sz, ink, 0.5, weight=700, halo=3)
-            + txt(LX, 344, f'{rp["s"]:,}', 26, rp["color"], 1, weight=700, halo=3) + "</g>")
+        sz = 34 if len(nm) <= 14 else (27 if len(nm) <= 19 else 22)
+        add(f'<g class="rb{k}">' + txt(LX, 318, nm, sz, ink, 0.5, weight=700, halo=4)
+            + txt(LX, 362, f'{rp["s"]:,}', 30, rp["color"], 1, weight=700, halo=3) + "</g>")
 
-    ts = A0 + RIV_FLASH + RIV_NAMED * 0.34 + 0.1
+    ts = A0 + RIV_FLASH + RIV_NAMED * 0.45 + 0.1
     tot_s = sum(r["s"] for r in riv)
     tot_f = sum(r["f"] for r in riv)
+    win_check("river total", ts, ts + 0.24, A1 - 0.35, A1 - 0.1)
     css.append(f"@keyframes rt{{0%,{pc(ts):.2f}%{{opacity:0;transform:scale(.93)}}"
                f"{pc(ts+0.24):.2f}%,{pc(A1-0.35):.2f}%{{opacity:1;transform:scale(1)}}"
                f"{pc(A1-0.1):.2f}%,100%{{opacity:0;transform:scale(.93)}}}}")
     css.append(f".rt{{opacity:0;transform-box:fill-box;transform-origin:left center;"
                f"animation:rt {LOOP:g}s cubic-bezier(.2,1.5,.4,1) infinite}}")
     add('<g class="rt">'
-        + txt(LX, 322, f"{tot_s:,}", 52, T["riv_star"], 1, weight=700, halo=5)
-        + txt(LX, 348, "STARS", 16, ink, 6, weight=600, halo=3)
-        + txt(LX, 380, f"{tot_f:,}", 24, T["riv_fork"], 1, weight=700, halo=3)
-        + txt(LX + 24 * 0.62 * len(f"{tot_f:,}") + 13, 380, "FORKS", 14, mut, 3, halo=3)
+        + txt(LX, 330, f"{tot_s:,}", 56, T["riv_star"], 1, weight=700, halo=5)
+        + txt(LX, 362, "STARS", 20, ink, 5, weight=600, halo=3)
+        + txt(LX + 20 * 5.4 + 26, 362, f"{tot_f:,} FORKS", 20, mut, 2, weight=600, halo=3)
         + "</g>")
 
 
@@ -668,13 +686,61 @@ text{{font-family:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,monospace
 .hubr{{transform-origin:{CX}px {CY}px;animation:hubr 3s cubic-bezier(.3,0,.2,1) infinite}}
 @keyframes hubr{{0%{{transform:scale(1);opacity:.55}}6%{{transform:scale(1.5);opacity:0}}100%{{transform:scale(1.5);opacity:0}}}}
 """)
-    add('<g class="dp act0">')
+    add('<g class="dp"><g class="act0">')
     for a in range(NACT):
         add(f'<circle class="hubr pcol{a}" cx="{CX}" cy="{CY}" r="30" fill="none" stroke="{hi[a]}" stroke-width="1.4"/>')
     add(f'<circle cx="{CX}" cy="{CY}" r="30" fill="{T["disc"]}" fill-opacity="{0.10 if th=="dark" else 0.035}" '
         f'stroke="{line}" stroke-width="1"/>')
     add(f'<g class="spinf" style="transform-origin:{CX}px {CY}px"><text x="{CX}" y="{CY}" font-size="26" '
         f'fill="{T["warm"]}" text-anchor="middle" dominant-baseline="central">꩜</text></g>')
+    add("</g></g>")
+
+    # ============================================================ THE TERMINAL
+    # The loop opens on a prompt and closes on one. It says what this is, and
+    # the last line says the part that matters: tomorrow it will be different.
+    # Typing is a clip rectangle widening in steps(n) - one animation, n chars,
+    # no per-letter elements - and the caret steps along with it.
+    TSZ, TCH = 23, 23 * 0.6 + 0.6
+    TX, TY = LX, 196
+    cmd = "$ git clone https://github.com/fabriziosalmi"
+    nch = len(cmd)
+    css.append(
+        f"@keyframes typ{{0%{{transform:scaleX(0)}}"
+        f"{pc(T_TERM-0.35):.2f}%,{pc(T_OUT):.2f}%{{transform:scaleX(1)}}"
+        f"{pc(LOOP-0.05):.2f}%,100%{{transform:scaleX(1)}}}}")
+    css.append(f".typ{{transform-box:fill-box;transform-origin:left;"
+               f"animation:typ {LOOP:g}s steps({nch}) infinite}}")
+    css.append(
+        f"@keyframes car{{0%{{transform:translateX(0)}}"
+        f"{pc(T_TERM-0.35):.2f}%,{pc(T_OUT):.2f}%{{transform:translateX({nch*TCH:.0f}px)}}"
+        f"{pc(LOOP-0.05):.2f}%,100%{{transform:translateX({nch*TCH:.0f}px)}}}}")
+    css.append(f".car{{animation:car {LOOP:g}s steps({nch}) infinite,"
+               f"blink 1.06s steps(1,end) infinite}}")
+    # the terminal block is present at both ends of the loop and nowhere else
+    css.append(
+        f"@keyframes term{{0%{{opacity:1}}{pc(T_TERM+0.3):.2f}%{{opacity:1}}"
+        f"{pc(T_TERM+0.6):.2f}%,{pc(T_OUT-0.15):.2f}%{{opacity:0}}"
+        f"{pc(T_OUT+0.2):.2f}%,100%{{opacity:1}}}}")
+    css.append(f".term{{animation:term {LOOP:g}s ease-in-out infinite}}")
+
+    add('<g class="term">')
+    add(f'<clipPath id="tclip"><rect class="typ" x="{TX}" y="{TY-TSZ}" '
+        f'width="{nch*TCH:.0f}" height="{TSZ+10}"/></clipPath>')
+    add(f'<g clip-path="url(#tclip)">'
+        + txt(TX, TY, cmd, TSZ, ink, 0.6, weight=600, halo=3) + "</g>")
+    add(f'<rect class="car" x="{TX}" y="{TY-TSZ*0.78:.0f}" width="{TSZ*0.55:.0f}" '
+        f'height="{TSZ*0.92:.0f}" fill="{T["warm"]}"/>')
+
+    # the closing lines: what came out, and when it changes
+    OUT_L = [(f'  {fmt(S["stars"])} stars · {S["n_repos"]} repos · '
+              f'{fmt(S["contrib"])} contributions', mut),
+             ("  next render 04:17 UTC — tomorrow this is a different picture", faint)]
+    for li, (line, col) in enumerate(OUT_L):
+        t0 = T_OUT + 0.35 + li * 0.35
+        css.append(f"@keyframes tl{li}{{0%,{pc(t0):.2f}%{{opacity:0;transform:translateX(-6px)}}"
+                   f"{pc(t0+0.2):.2f}%,100%{{opacity:1;transform:translateX(0)}}}}")
+        css.append(f".tl{li}{{opacity:0;animation:tl{li} {LOOP:g}s cubic-bezier(.2,1,.3,1) infinite}}")
+        add(txt(TX, TY + 36 + li * 32, line, 19, col, 0.4, weight=600, cls=f"tl{li}", halo=3))
     add("</g>")
 
     # ============================================================== THE WALL
@@ -727,6 +793,7 @@ text{{font-family:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,monospace
  .dp,.act0,.act1,.act2,.dial0,.dial1,.dial2,.aura0,.aura1,.aura2,
  .pcol0,.pcol1,.pcol2{opacity:0!important}
  .wallui,.wallframe{opacity:1!important}
+ .term{opacity:0!important}
 }""")
 
     head, defs_open, gradients, rest = out[:3], out[3], out[4], out[5:]
