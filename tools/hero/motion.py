@@ -56,10 +56,13 @@ def install(d):
                     f.append(f"grayscale({g:.2f})")
                 if i == 3:                       # the negative, a single frame
                     f.append("invert(1)")
+                    f.append("url(#liq1)")
                 elif i == 5:                     # the blowout, with the glow
+                    f.append("url(#liq2)")
                     f.append("brightness(2.1) contrast(.72) "
                              "drop-shadow(0 0 7px rgba(255,255,255,.6))")
                 elif i == 1:
+                    f.append("url(#liq0)")
                     f.append("brightness(1.45) contrast(1.35) "
                              "drop-shadow(0 0 5px rgba(255,255,255,.42))")
             if e > 0.08:
@@ -143,8 +146,8 @@ def install(d):
     css.append(f".dp{{opacity:0;animation:dp {LOOP:g}s ease-in-out infinite}}")
     # the panel labels do the exact opposite
     css.append(
-        f"@keyframes wallui{{0%,{pc(T_TERM+0.26):.2f}%{{opacity:0}}"
-        f"{pc(T_TERM+0.5):.2f}%,{pc(T_WALL):.2f}%{{opacity:1}}"
+        f"@keyframes wallui{{0%,{pc(T_WALL_IN-0.2):.2f}%{{opacity:0}}"
+        f"{pc(T_WALL_IN):.2f}%,{pc(T_WALL):.2f}%{{opacity:1}}"
         f"{pc(T_WALL+0.5):.2f}%,{pc(T_BACK[1]-0.5):.2f}%{{opacity:0}}"
         f"{pc(T_BACK[1]):.2f}%,{pc(T_OUT):.2f}%{{opacity:1}}"
         f"{pc(T_OUT+0.45):.2f}%,100%{{opacity:0}}}}")
@@ -152,8 +155,8 @@ def install(d):
     # The frame outlives its own labels: it stays up while the data flies out of
     # it, which is the whole point of a frame-breaking shot.
     css.append(
-        f"@keyframes wallframe{{0%,{pc(T_TERM+0.26):.2f}%{{opacity:0}}"
-        f"{pc(T_TERM+0.5):.2f}%,{pc(T_WALL+0.6):.2f}%{{opacity:1}}"
+        f"@keyframes wallframe{{0%,{pc(T_WALL_IN-0.2):.2f}%{{opacity:0}}"
+        f"{pc(T_WALL_IN):.2f}%,{pc(T_WALL+0.6):.2f}%{{opacity:1}}"
         f"{pc(ACTW[0][0]+0.4):.2f}%,{pc(T_BACK[0]-0.3):.2f}%{{opacity:0}}"
         f"{pc(T_BACK[1]-0.8):.2f}%,{pc(T_OUT):.2f}%{{opacity:1}}"
         f"{pc(T_OUT+0.45):.2f}%,100%{{opacity:0}}}}")

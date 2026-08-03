@@ -12,17 +12,19 @@ LX = 56                          # left column
 # The loop is a match cut: it opens on a pixel-accurate replica of GitHub's own
 # contribution panel, breaks it, flies the data out of the frame, and puts every
 # square back where it was. Seconds, not percentages, so the beats stay readable.
-LOOP = 24.0
-T_TERM = 2.2                     # the terminal types, then the wall materialises
-T_WALL = 4.6                     # the wall holds still, long enough to be believed
-T_OUT = 20.9                     # and the terminal comes back to say what happens next
+LOOP = 28.5
+T_TERM = 2.2                     # the terminal types, then blows into the gap
+T_WALL_IN = 4.35                 # and only after the name has had the stage
+T_WALL = 6.5                     # the wall holds still, long enough to be believed
+T_OUT = 25.2                     # and the terminal comes back to say what happens next
 # Drawing beats and text beats alternate: they never share the frame, which is
 # what kept the type small. Alone on the canvas a number can be 110px.
-ACTW = [(6.0, 8.6), (10.6, 15.4)]   # 01 the ring · 02 the river (drawing only)
-SAY_NAME = (4.6, 6.0)               # the name lands while the wall comes apart
-SAY_1 = (8.7, 10.5)                 # what the ring was
-SAY_2 = (15.9, 19.0)                # what the river was
-T_BACK = (19.1, 20.6)               # everything returns behind the wall
+ACTW = [(7.9, 10.5), (13.4, 18.5)]  # 01 the ring · 02 the river (drawing only)
+SAY_NAME = (2.55, 4.15)             # the name owns the frame, alone, right after
+                                    # the prompt: you cloned it, this is whose
+SAY_1 = (10.6, 13.3)                # what the ring was
+SAY_2 = (19.0, 23.4)                # what the river was
+T_BACK = (23.5, 25.0)               # everything returns behind the wall
 NACT = 2
 
 # The river: the galaxy of demos/galaxy straightened out for a letterbox frame.
@@ -32,7 +34,7 @@ NACT = 2
 # corners and clips at the edges.
 RX0, RX1 = 72, 866
 RCY, RAMP = 198, 96
-RIV_BUILD, RIV_FLASH, RIV_NAMED = 3.0, 0.0, 4
+RIV_BUILD, RIV_FLASH, RIV_NAMED = 3.4, 0.0, 4
 
 # GitHub's calendar, measured from the real thing: 53 columns, 10px cells,
 # 13px pitch, and the palettes lifted from GitHub's own theme stylesheets

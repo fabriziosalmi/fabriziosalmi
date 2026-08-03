@@ -34,8 +34,8 @@ def render(d):
         back_e = back_s + 0.75
         css.append(
             f"@keyframes fly{k}{{"
-            f"0%,{pc(T_TERM+0.26):.2f}%{{transform:translate(0,0);opacity:0;fill:var(--c0)}}"
-            f"{pc(T_TERM+0.5):.2f}%,{pc(out_s):.2f}%{{transform:translate(0,0);opacity:1;fill:var(--c0)}}"
+            f"0%,{pc(T_WALL_IN-0.2):.2f}%{{transform:translate(0,0);opacity:0;fill:var(--c0)}}"
+            f"{pc(T_WALL_IN):.2f}%,{pc(out_s):.2f}%{{transform:translate(0,0);opacity:1;fill:var(--c0)}}"
             f"{pc(out_e):.2f}%,{pc(ACTW[0][1]-0.3):.2f}%{{transform:var(--t);opacity:1;fill:var(--c1)}}"
             # the ring drops to glue as soon as its act ends, instead of drifting
             # down over two seconds on top of the statements
@@ -55,7 +55,17 @@ def render(d):
         css.append(f".fly{k}{{transform-box:fill-box;transform-origin:center;"
                    f"animation:fly{k} {LOOP:g}s cubic-bezier(.5,0,.2,1) infinite}}")
 
-    sq = ['<g>']
+    # the flight is the only moment the filter is on: a gooey pass while they
+    # are in the air, off the instant they land. (Filters cost; a filter that
+    # runs for 26 seconds to be seen for one is the definition of waste.)
+    css.append(
+        f"@keyframes melt{{0%,{pc(T_WALL-0.05):.2f}%{{filter:none}}"
+        f"{pc(T_WALL):.2f}%,{pc(T_WALL+1.25):.2f}%{{filter:url(#melt)}}"
+        f"{pc(T_WALL+1.5):.2f}%,{pc(T_BACK[0]-0.05):.2f}%{{filter:none}}"
+        f"{pc(T_BACK[0]):.2f}%,{pc(T_BACK[1]-0.15):.2f}%{{filter:url(#melt)}}"
+        f"{pc(T_BACK[1]):.2f}%,100%{{filter:none}}}}")
+    css.append(f".melt{{animation:melt {LOOP:g}s steps(1,end) infinite}}")
+    sq = ['<g class="melt">']
     for i2, dd in enumerate(days):
         col, row = i2 // ROWS, i2 % ROWS
         cx0 = GX + col * PITCH + CELL / 2

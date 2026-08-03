@@ -37,8 +37,8 @@ def render(d):
                f"blink 1.06s steps(1,end) infinite}}")
     # the terminal block is present at both ends of the loop and nowhere else
     css.append(
-        f"@keyframes term{{0%{{opacity:1}}{pc(T_TERM+0.22):.2f}%{{opacity:1}}"
-        f"{pc(T_TERM+0.3):.2f}%,{pc(T_OUT-0.28):.2f}%{{opacity:0}}"
+        f"@keyframes term{{0%{{opacity:1}}{pc(T_TERM+0.1):.2f}%{{opacity:1}}"
+        f"{pc(T_TERM+0.22):.2f}%,{pc(T_OUT-0.28):.2f}%{{opacity:0}}"
         f"{pc(T_OUT-0.1):.2f}%,100%{{opacity:1}}}}")
     css.append(f".term{{animation:term {LOOP:g}s ease-in-out infinite}}")
 

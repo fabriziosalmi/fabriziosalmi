@@ -84,7 +84,27 @@ class Doc:
                  f'<feGaussianBlur stdDeviation="{T["glow"]}" result="b"/>'
                  f'<feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>')
         d.append('<filter id="soft" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="28"/></filter>')
-        # RGB split for the tear: the three channels come apart by a few pixels.
+
+        # Gooey + directional motion blur, for the one moment the squares are in
+        # the air. feGaussianBlur softens them, feColorMatrix drives the alpha
+        # back up so the blobs re-harden and fuse like mercury; the blur is
+        # directional (7 across, 2 down) so the flight reads as speed, not fog.
+        d.append('<filter id="melt" x="-25%" y="-25%" width="150%" height="150%">'
+                 '<feGaussianBlur in="SourceGraphic" stdDeviation="4.5 1.4" result="b"/>'
+                 '<feColorMatrix in="b" type="matrix" result="g" values="'
+                 '1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 28 -12"/>'
+                 '<feBlend in="SourceGraphic" in2="g"/></filter>')
+        # Liquid displacement for the tear. baseFrequency and scale cannot be
+        # animated from CSS, so three fixed states are baked and switched at the
+        # hard-cut samples: the distortion moves without a line of JavaScript.
+        for li, (bf, sc, sd) in enumerate(((".009 .035", 22, 3),
+                                           (".021 .012", 15, 11),
+                                           (".006 .052", 28, 29))):
+            d.append(f'<filter id="liq{li}" x="-12%" y="-12%" width="124%" height="124%">'
+                     f'<feTurbulence type="fractalNoise" baseFrequency="{bf}" numOctaves="2" '
+                     f'seed="{sd}" result="t"/>'
+                     f'<feDisplacementMap in="SourceGraphic" in2="t" scale="{sc}" '
+                     f'xChannelSelector="R" yChannelSelector="G"/></filter>')        # RGB split for the tear: the three channels come apart by a few pixels.
         # screen on dark, multiply on light, or the aberration washes the page out.
         # on white, multiply is the physically right blend but it muddies fast:
         # half the offset there, or the small type turns to porridge
