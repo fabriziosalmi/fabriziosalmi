@@ -26,7 +26,7 @@ QUERY = """
     contributionsCollection {
       contributionCalendar {
         totalContributions
-        weeks { contributionDays { date contributionCount } }
+        weeks { contributionDays { date contributionCount contributionLevel } }
       }
     }
   }

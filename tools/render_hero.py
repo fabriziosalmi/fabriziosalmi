@@ -17,12 +17,29 @@ from datetime import datetime, timezone
 
 # ------------------------------------------------------------------ geometry
 W, H = 920, 400
-CX, CY, R = 676, 196, 160        # il quadrante
-LOOP = 15.0                      # secondi
-NACT = 3
-ACT = LOOP / NACT                # 5s per atto
+CX, CY, R = 676, 196, 160        # the dial
+LX = 56                          # left column
 
-LX = 56                          # colonna di sinistra
+# The loop is a match cut: it opens on a pixel-accurate replica of GitHub's own
+# contribution panel, breaks it, flies the data out of the frame, and puts every
+# square back where it was. Seconds, not percentages, so the beats stay readable.
+LOOP = 14.0
+T_WALL = 2.4                     # the wall holds still, long enough to be believed
+T_OUT = 1.2                      # the break
+ACTW = [(3.6, 6.4), (6.4, 9.4), (9.4, 12.4)]
+T_BACK = (12.4, 13.6)            # everything returns behind the wall
+NACT = 3
+
+# GitHub's calendar, measured from the real thing: 53 columns, 10px cells,
+# 13px pitch, and the palettes lifted from GitHub's own theme stylesheets
+# (the ones in every blog post - #9be9a8, #0e4429 - are years out of date).
+CELL, PITCH, COLS, ROWS = 10, 13, 53, 7
+GRID_W, GRID_H = COLS * PITCH - 3, ROWS * PITCH - 3
+WALL_X, WALL_Y = 86, 120         # panel corner
+PAD, WD_COL, MO_ROW = 16, 30, 20
+GX, GY = WALL_X + PAD + WD_COL, WALL_Y + PAD + MO_ROW
+SANS = ('-apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", '
+        'Helvetica, Arial, sans-serif')
 
 # names too long to fit inside a sector
 SHORT = {"JavaScript": "JS", "TypeScript": "TS", "Jupyter Notebook": "NOTEBOOK", "Dockerfile": "DOCKER",
@@ -56,6 +73,11 @@ NEUTRAL = "#7d8590"
 
 THEMES = {
     "dark": dict(
+        cal=["#151b23", "#033a16", "#196c2e", "#2ea043", "#56d364"],
+        # same scale, pushed up: GitHub's L1 reads as a 10px square and
+        # vanishes as a 2px spoke, so the squares ignite once they fly
+        lit=["#30363d", "#2ea043", "#56d364", "#7ee787", "#aff5b4"],
+        ui_border="#3d444d", ui_mut="#9198a1", ui_fg="#f0f6fc",
         ink="#f0f6fc", mut="#9198a1", faint="#7d8590", line=NEUTRAL, hair=NEUTRAL,
         line_op=0.42, hair_op=0.20,
         disc="#ffffff", disc_op=0.022, warm="#e3b341", knock="#0d1117",
@@ -65,6 +87,9 @@ THEMES = {
         glow=3.4, glow_op=1.0,
     ),
     "light": dict(
+        cal=["#eff2f5", "#aceebb", "#4ac26b", "#2da44e", "#116329"],
+        lit=["#d0d7de", "#2da44e", "#116329", "#0b4a22", "#04310f"],
+        ui_border="#d1d9e0", ui_mut="#59636e", ui_fg="#1f2328",
         ink="#1f2328", mut="#636c76", faint="#6e7681", line=NEUTRAL, hair=NEUTRAL,
         line_op=0.42, hair_op=0.22,
         disc="#000000", disc_op=0.018, warm="#9a6700", knock="#ffffff",
@@ -108,6 +133,7 @@ def build(S, th, T):
     acc, hi = T["acc"], T["hi"]
     css, out = [], []
     add = out.append
+    SQUARES = []
 
     def esc(s):
         return str(s).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
@@ -146,24 +172,57 @@ def build(S, th, T):
              f'<feGaussianBlur stdDeviation="{T["glow"]}" result="b"/>'
              f'<feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>')
     d.append('<filter id="soft" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="28"/></filter>')
+    # RGB split for the tear: the three channels come apart by a few pixels.
+    # screen on dark, multiply on light, or the aberration washes the page out.
+    # on white, multiply is the physically right blend but it muddies fast:
+    # half the offset there, or the small type turns to porridge
+    bl = "screen" if th == "dark" else "multiply"
+    dxs = 4 if th == "dark" else 2
+    d.append(
+        '<filter id="rgb" x="-5%" y="-5%" width="110%" height="110%">'
+        '<feColorMatrix in="SourceGraphic" type="matrix" values="1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0" result="r"/>'
+        f'<feOffset in="r" dx="-{dxs}" dy="0" result="ro"/>'
+        '<feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0" result="g"/>'
+        '<feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0" result="b"/>'
+        f'<feOffset in="b" dx="{dxs}" dy="0" result="bo"/>'
+        f'<feBlend in="ro" in2="g" mode="{bl}" result="rg"/>'
+        f'<feBlend in="rg" in2="bo" mode="{bl}"/></filter>')
     d.append(f'<clipPath id="disc"><circle cx="{CX}" cy="{CY}" r="{R-6}"/></clipPath>')
     add("".join(d))
 
     css.append(f"""
 text{{font-family:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,monospace}}
+.wallui text{{font-family:{SANS}}}
 .g{{transform-box:fill-box;transform-origin:center}}
 .spin{{transform-origin:{CX}px {CY}px;animation:spin 150s linear infinite}}
 .spinf{{transform-origin:{CX}px {CY}px;animation:spin 26s linear infinite}}
 @keyframes spin{{to{{transform:rotate(360deg)}}}}
 .blink{{animation:blink 2.2s steps(1,end) infinite}}
 @keyframes blink{{0%,55%{{opacity:1}}56%,100%{{opacity:.15}}}}
-.shim{{animation:shim {ACT:g}s cubic-bezier(.45,0,.15,1) infinite}}
+.shim{{animation:shim 3s cubic-bezier(.45,0,.15,1) infinite}}
 @keyframes shim{{0%{{transform:translateX(-300px)}}34%,100%{{transform:translateX(560px)}}}}
+""")
+
+    # THE TEAR. Dead centre of the loop, for a third of a second: the whole frame
+    # slips, the channels come apart, and the wall shows through the data - as if
+    # the interface underneath had never gone anywhere. Eased in, eased out, with
+    # three hard slips inside so it reads as a tear and not as a wobble.
+    G = (48.4, 49.1, 50.2, 50.9)     # % of the loop: before, in, hold, after
+    css.append(f"""
+@keyframes tear{{
+ 0%,{G[0]:.1f}%{{transform:translate(0,0) skewX(0);filter:none}}
+ {G[0]+0.25:.1f}%{{transform:translate(3px,-1px) skewX(-.7deg);filter:url(#rgb);animation-timing-function:steps(1,end)}}
+ {G[0]+0.75:.1f}%{{transform:translate(-6px,1px) skewX(1.5deg) scaleY(1.008);filter:url(#rgb);animation-timing-function:steps(1,end)}}
+ {G[1]+0.35:.1f}%{{transform:translate(0,0) skewX(0);filter:none;animation-timing-function:steps(1,end)}}
+ {G[2]:.1f}%{{transform:translate(-3px,1px) skewX(.9deg);filter:url(#rgb);animation-timing-function:steps(1,end)}}
+ {G[3]:.1f}%,100%{{transform:translate(0,0) skewX(0);filter:none}}}}
+.tear{{transform-box:view-box;transform-origin:center;
+ animation:tear {LOOP:g}s cubic-bezier(.7,0,.3,1) infinite}}
 """)
 
     # act shells: hard opacity windows, quick cut
     for a in range(NACT):
-        t0, t1 = a * ACT, (a + 1) * ACT
+        t0, t1 = ACTW[a]
         # every act lives and dies inside its window: 0% and 100% always off
         css.append(
             f"@keyframes act{a}{{0%{{opacity:0}}"
@@ -188,7 +247,7 @@ text{{font-family:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,monospace
     def stagger(name, a, n, frm, to, dur=0.75, spread=1.25, lag=0.15,
                 ease="cubic-bezier(.16,1,.3,1)", out_at=None):
         """n classes .name0..n-1, staggered inside act a."""
-        t0, t1 = a * ACT, (a + 1) * ACT
+        t0, t1 = ACTW[a]
         for k in range(n):
             s = t0 + lag + spread * k / max(n - 1, 1)
             e = s + dur
@@ -197,6 +256,29 @@ text{{font-family:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,monospace
                        f"{pc(e):.2f}%,{pc(oa):.2f}%{{{to}}}"
                        f"{pc(t1-0.1):.2f}%,100%{{{frm}}}}}")
             css.append(f".{name}{k}{{animation:{name}{k} {LOOP:g}s {ease} infinite}}")
+
+    # The data phase: everything that only exists once the wall is broken.
+    # While the wall stands, this is all at zero - the panel is the whole picture.
+    css.append(
+        f"@keyframes dp{{0%,{pc(T_WALL+0.2):.2f}%{{opacity:0}}"
+        f"{pc(ACTW[0][0]):.2f}%,{pc(T_BACK[0]):.2f}%{{opacity:1}}"
+        f"{pc(T_BACK[0]+0.5):.2f}%,100%{{opacity:0}}}}")
+    css.append(f".dp{{opacity:0;animation:dp {LOOP:g}s ease-in-out infinite}}")
+    # the panel labels do the exact opposite
+    css.append(
+        f"@keyframes wallui{{0%,{pc(T_WALL):.2f}%{{opacity:1}}"
+        f"{pc(T_WALL+0.5):.2f}%,{pc(T_BACK[1]-0.5):.2f}%{{opacity:0}}"
+        f"{pc(T_BACK[1]):.2f}%,100%{{opacity:1}}}}")
+    css.append(f".wallui{{animation:wallui {LOOP:g}s ease-in-out infinite}}")
+    # The frame outlives its own labels: it stays up while the data flies out of
+    # it, which is the whole point of a frame-breaking shot.
+    css.append(
+        f"@keyframes wallframe{{0%,{pc(T_WALL+0.6):.2f}%{{opacity:1}}"
+        f"{pc(ACTW[0][0]+0.4):.2f}%,{pc(T_BACK[0]-0.3):.2f}%{{opacity:0}}"
+        f"{pc(T_BACK[1]-0.8):.2f}%,100%{{opacity:1}}}}")
+    css.append(f".wallframe{{animation:wallframe {LOOP:g}s ease-in-out infinite}}")
+
+    add('<g class="dp">')
 
     # ============================================================ colour auras
     for a in range(NACT):
@@ -258,10 +340,11 @@ text{{font-family:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,monospace
 
     # progress arc: one full turn per loop, one colour per act
     CIRC = 2 * math.pi * (R + 18)
-    css.append(f"@keyframes prog{{0%{{stroke-dashoffset:{CIRC:.0f}}}100%{{stroke-dashoffset:0}}}}")
+    css.append(f"@keyframes prog{{0%,{pc(ACTW[0][0]):.2f}%{{stroke-dashoffset:{CIRC:.0f}}}"
+               f"{pc(ACTW[2][1]):.2f}%,100%{{stroke-dashoffset:0}}}}")
     css.append(f".prog{{stroke-dasharray:{CIRC:.0f};animation:prog {LOOP:g}s linear infinite}}")
     for a in range(NACT):
-        t0, t1 = a * ACT, (a + 1) * ACT
+        t0, t1 = ACTW[a]
         css.append(f"@keyframes pc{a}{{0%,{pc(t0):.2f}%{{opacity:0}}{pc(t0+0.01):.2f}%,"
                    f"{pc(t1):.2f}%{{opacity:.95}}{pc(t1+0.01):.2f}%,100%{{opacity:0}}}}")
         css.append(f".pcol{a}{{opacity:0;animation:pc{a} {LOOP:g}s steps(1,end) infinite}}")
@@ -270,43 +353,63 @@ text{{font-family:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,monospace
             f'transform="rotate(-90 {CX} {CY})" filter="url(#gl)"/></g>')
 
     # ------------------------------------------------------------ ACT 1 · SIGNAL
+    # The 366 squares are not redrawn as bars: they ARE the bars. Each <rect>
+    # lives at its calendar cell and carries the single transform that turns it
+    # into a spoke of the ring, so the match cut cannot drift by a pixel.
     days = S["days"]
-    # a single 1466-contribution day would flatten every other one: clip at p96
     vals = sorted(d["contributionCount"] for d in days)
-    mx = vals[int(len(vals) * 0.96)] or max(vals) or 1
+    mx = vals[int(len(vals) * 0.96)] or max(vals) or 1   # clip at p96, see below
     r0 = 58
-    g = [f'<g class="dial0" clip-path="url(#disc)">']
-    NB = 18
-    stagger("s1", 0, NB, "transform:scaleY(0);opacity:0", "transform:scaleY(1);opacity:1",
-            dur=0.55, spread=1.5, ease="cubic-bezier(.2,1.4,.35,1)")
-    for i, dd in enumerate(days):
+    LEVEL = {"NONE": 0, "FIRST_QUARTILE": 1, "SECOND_QUARTILE": 2,
+             "THIRD_QUARTILE": 3, "FOURTH_QUARTILE": 4}
+
+    NF = 18
+    for k in range(NF):
+        out_s = T_WALL + 0.95 * k / (NF - 1)
+        out_e = out_s + 0.8
+        back_s = T_BACK[0] + 0.55 * k / (NF - 1)
+        back_e = back_s + 0.75
+        css.append(
+            f"@keyframes fly{k}{{"
+            f"0%,{pc(out_s):.2f}%{{transform:translate(0,0);opacity:1;fill:var(--c0)}}"
+            f"{pc(out_e):.2f}%,{pc(ACTW[0][1]-0.3):.2f}%{{transform:var(--t);opacity:1;fill:var(--c1)}}"
+            f"{pc(ACTW[1][0]+0.2):.2f}%,{G[0]:.1f}%{{transform:var(--t);opacity:.07;fill:var(--c1)}}"
+            f"{G[1]:.1f}%{{transform:translate(0,0);opacity:.92;fill:var(--c0);animation-timing-function:steps(1,end)}}"
+            f"{G[2]:.1f}%{{transform:translate(0,0);opacity:.92;fill:var(--c0)}}"
+            f"{G[3]:.1f}%,{pc(ACTW[2][1]-0.2):.2f}%{{transform:var(--t);opacity:.07;fill:var(--c1)}}"
+            f"{pc(back_s):.2f}%{{transform:var(--t);opacity:1}}"
+            f"{pc(back_e):.2f}%,100%{{transform:translate(0,0);opacity:1;fill:var(--c0)}}}}")
+        css.append(f".fly{k}{{transform-box:fill-box;transform-origin:center;"
+                   f"animation:fly{k} {LOOP:g}s cubic-bezier(.5,0,.2,1) infinite}}")
+
+    sq = ['<g>']
+    for i2, dd in enumerate(days):
+        col, row = i2 // ROWS, i2 % ROWS
+        cx0 = GX + col * PITCH + CELL / 2
+        cy0 = GY + row * PITCH + CELL / 2
         v = dd["contributionCount"]
+        lv = LEVEL.get(dd.get("contributionLevel", "NONE"), 0)
         h = min(1.0, (v / mx) ** 0.62) * (R - 20 - r0)
-        if h < 1.6:
-            h = 1.6
-        ang = i * 360 / len(days)
-        x0, y0 = pol(r0, ang)
-        x1, y1 = pol(r0 + h, ang)
-        k = int(i / len(days) * NB) % NB
-        over = v > mx                      # day above the clip: must be declared
-        c = hi[0] if v > mx * 0.35 else acc[0]
-        op = 0.35 + 0.65 * min(1.0, (v / mx) ** 0.4)
-        g.append(f'<line class="s1{k}" x1="{x0:.1f}" y1="{y0:.1f}" x2="{x1:.1f}" y2="{y1:.1f}" '
-                 f'stroke="{c}" stroke-width="1.9" stroke-linecap="round" opacity="{op:.2f}" '
-                 f'style="transform-box:fill-box;transform-origin:{"top" if 90 < ang < 270 else "bottom"}"/>')
-        if over:
-            ox, oy = pol(r0 + h + 4, ang)
-            g.append(f'<circle class="s1{k} g" cx="{ox:.1f}" cy="{oy:.1f}" r="2.1" fill="{hi[0]}" '
-                     f'filter="url(#gl)"/>')
-    # month ticks + where today falls: says "this is a whole year"
-    for i, dd in enumerate(days):
-        ang = i * 360 / len(days)
+        if h < 1.8:
+            h = 1.8
+        ang = i2 * 360 / len(days)
+        tx, ty = pol(r0 + h / 2, ang)
+        sc = f"translate({tx-cx0:.1f}px,{ty-cy0:.1f}px) rotate({ang:.1f}deg) scale(.24,{h/CELL:.3f})"
+        sq.append(f'<rect class="fly{int(col/COLS*NF)%NF}" x="{cx0-CELL/2:.0f}" y="{cy0-CELL/2:.0f}" '
+                  f'width="{CELL}" height="{CELL}" rx="2" fill="{T["cal"][lv]}" '
+                  f'style="--t:{sc};--c0:{T["cal"][lv]};--c1:{T["lit"][lv]}"/>')
+    sq.append("</g>")
+    SQUARES[:] = ["".join(sq)]   # emitted outside the data phase: they always exist
+
+    # the act-1 extras stay in the dial: month ticks and today, on the ring
+    g = [f'<g class="dial0" clip-path="url(#disc)">']
+    for i2, dd in enumerate(days):
+        ang = i2 * 360 / len(days)
         if dd["date"][8:10] == "01":
             x0, y0 = pol(R - 14, ang)
             x1, y1 = pol(R - 6, ang)
             g.append(f'<line x1="{x0:.1f}" y1="{y0:.1f}" x2="{x1:.1f}" y2="{y1:.1f}" stroke="{mut}" '
                      f'stroke-width="1" opacity="0.45"/>')
-    # today: just a lit tick on the rim, without slicing through the chart
     ang = (len(days) - 1) * 360 / len(days)
     x0, y0 = pol(R - 26, ang)
     x1, y1 = pol(R - 8, ang)
@@ -448,32 +551,78 @@ text{{font-family:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,monospace
     g.append("</g>")
     add("".join(g))
 
+    add("</g>")   # end of the data phase
+    add(SQUARES[0])   # the calendar squares: present in every phase
+
     # fixed hub: one anchor for the eye, identical across all three acts
     css.append(f"""
-.hubr{{transform-origin:{CX}px {CY}px;animation:hubr {LOOP/NACT:g}s cubic-bezier(.3,0,.2,1) infinite}}
+.hubr{{transform-origin:{CX}px {CY}px;animation:hubr 3s cubic-bezier(.3,0,.2,1) infinite}}
 @keyframes hubr{{0%{{transform:scale(1);opacity:.55}}6%{{transform:scale(1.5);opacity:0}}100%{{transform:scale(1.5);opacity:0}}}}
 """)
+    add('<g class="dp">')
     for a in range(NACT):
         add(f'<circle class="hubr pcol{a}" cx="{CX}" cy="{CY}" r="30" fill="none" stroke="{hi[a]}" stroke-width="1.4"/>')
     add(f'<circle cx="{CX}" cy="{CY}" r="30" fill="{T["disc"]}" fill-opacity="{0.10 if th=="dark" else 0.035}" '
         f'stroke="{line}" stroke-width="1"/>')
     add(f'<g class="spinf" style="transform-origin:{CX}px {CY}px"><text x="{CX}" y="{CY}" font-size="26" '
         f'fill="{T["warm"]}" text-anchor="middle" dominant-baseline="central">꩜</text></g>')
+    add("</g>")
+
+    # ============================================================== THE WALL
+    # A replica of GitHub's own contribution panel, down to the 10px cells on a
+    # 13px pitch, the 53 columns, the palette read out of GitHub's stylesheets
+    # and the exact wording of its footer. It is the first frame and the last:
+    # the drawing opens as a piece of the interface and closes back into one.
+    ui_b, ui_m, ui_f = T["ui_border"], T["ui_mut"], T["ui_fg"]
+    PW = PAD * 2 + WD_COL + GRID_W
+    PH = PAD * 2 + MO_ROW + GRID_H + 26
+    w = ['<g class="wallui">']
+    w.append(f'<text x="{WALL_X}" y="{WALL_Y-14}" font-size="16" fill="{ui_f}" '
+             f'font-weight="400">{S["contrib"]:,} contributions in the last year</text>')
+    w.append("</g>")
+    w.append(f'<g class="wallframe"><rect x="{WALL_X}" y="{WALL_Y}" width="{PW}" height="{PH}" rx="6" '
+             f'fill="none" stroke="{ui_b}" stroke-width="1"/></g>')
+    w.append('<g class="wallui">')
+    # month labels, one above the first week of each month
+    seen_m = None
+    for c in range(COLS):
+        d0 = days[min(c * ROWS, len(days) - 1)]["date"]
+        m = d0[:7]
+        if m != seen_m and int(d0[8:10]) <= 7:
+            seen_m = m
+            lab = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][int(d0[5:7]) - 1]
+            w.append(f'<text x="{GX + c*PITCH}" y="{GY-6}" font-size="12" fill="{ui_m}">{lab}</text>')
+    for r_, lab in ((1, "Mon"), (3, "Wed"), (5, "Fri")):
+        w.append(f'<text x="{GX-8}" y="{GY + r_*PITCH + 9}" font-size="12" fill="{ui_m}" '
+                 f'text-anchor="end">{lab}</text>')
+    w.append(f'<text x="{WALL_X+PAD}" y="{WALL_Y+PH-12}" font-size="12" fill="{ui_m}">'
+             f'Learn how we count contributions</text>')
+    lx4 = WALL_X + PW - PAD - 5 * (CELL + 3) - 74
+    w.append(f'<text x="{lx4}" y="{WALL_Y+PH-12}" font-size="12" fill="{ui_m}">Less</text>')
+    for n in range(5):
+        w.append(f'<rect x="{lx4 + 30 + n*(CELL+3)}" y="{WALL_Y+PH-21}" width="{CELL}" height="{CELL}" '
+                 f'rx="2" fill="{T["cal"][n]}"/>')
+    w.append(f'<text x="{lx4 + 30 + 5*(CELL+3) + 4}" y="{WALL_Y+PH-12}" font-size="12" fill="{ui_m}">More</text>')
+    w.append("</g>")
+    add("".join(w))
 
     add("</svg>")
 
-    # Anyone with "reduce motion" must not get a hole: freeze the dial on act 01,
-    # the one that fills the disc, and switch the other two off.
+    # Anyone with "reduce motion" gets the wall: no motion, no hole, and the most
+    # integrated frame of the whole loop - a piece of GitHub's own interface.
     # (Goes last in the stylesheet, after every rule it has to beat.)
     css.append("""
 @media (prefers-reduced-motion: reduce){
  *{animation:none!important}
- .act0,.dial0,.aura0,.pcol0{opacity:1!important;transform:none!important}
- .act1,.act2,.dial1,.dial2,.aura1,.aura2,.pcol1,.pcol2{opacity:0!important}
+ .dp,.act0,.act1,.act2,.dial0,.dial1,.dial2,.aura0,.aura1,.aura2,
+ .pcol0,.pcol1,.pcol2{opacity:0!important}
+ .wallui,.wallframe{opacity:1!important}
 }""")
 
     head, defs_open, gradients, rest = out[:3], out[3], out[4], out[5:]
-    return "\n".join(head + [defs_open, gradients, "<style>" + "\n".join(css) + "</style>", "</defs>"] + rest)
+    return "\n".join(head + [defs_open, gradients, "<style>" + "\n".join(css) + "</style>", "</defs>",
+                             '<g class="tear">'] + rest[:-1] + ["</g>", rest[-1]])
 
 
 if __name__ == "__main__":
