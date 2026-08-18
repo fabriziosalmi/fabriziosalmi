@@ -1,9 +1,9 @@
 <div align="center">
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./hero-dark.svg?v=20260817">
-  <source media="(prefers-color-scheme: light)" srcset="./hero-light.svg?v=20260817">
-  <img src="./hero-light.svg?v=20260817" alt="Fabrizio Salmi — infrastructure × security × AI agency. A replica of GitHub's contribution panel breaks apart: every square flies out and becomes a year of contributions, then 86 repositories drift past as clusters of stars — one dot per stargazer — before every square returns to its cell." width="100%">
+  <source media="(prefers-color-scheme: dark)" srcset="./hero-dark.svg?v=20260818">
+  <source media="(prefers-color-scheme: light)" srcset="./hero-light.svg?v=20260818">
+  <img src="./hero-light.svg?v=20260818" alt="Fabrizio Salmi — infrastructure × security × AI agency. A replica of GitHub's contribution panel breaks apart: every square flies out and becomes a year of contributions, then 86 repositories drift past as clusters of stars — one dot per stargazer — before every square returns to its cell." width="100%">
 </picture>
 
 <p><em>"I am not a coder."</em></p>
