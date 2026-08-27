@@ -3,7 +3,7 @@
   "user": {
    "contributionsCollection": {
     "contributionCalendar": {
-     "totalContributions": 13507,
+     "totalContributions": 13444,
      "weeks": [
       {
        "contributionDays": [
@@ -428,7 +428,7 @@
          "date": "2025-11-07"
         },
         {
-         "contributionCount": 80,
+         "contributionCount": 72,
          "contributionLevel": "SECOND_QUARTILE",
          "date": "2025-11-08"
         }
@@ -501,12 +501,12 @@
          "date": "2025-11-20"
         },
         {
-         "contributionCount": 13,
+         "contributionCount": 2,
          "contributionLevel": "FIRST_QUARTILE",
          "date": "2025-11-21"
         },
         {
-         "contributionCount": 7,
+         "contributionCount": 2,
          "contributionLevel": "FIRST_QUARTILE",
          "date": "2025-11-22"
         }
@@ -515,13 +515,13 @@
       {
        "contributionDays": [
         {
-         "contributionCount": 103,
+         "contributionCount": 81,
          "contributionLevel": "SECOND_QUARTILE",
          "date": "2025-11-23"
         },
         {
-         "contributionCount": 100,
-         "contributionLevel": "SECOND_QUARTILE",
+         "contributionCount": 49,
+         "contributionLevel": "FIRST_QUARTILE",
          "date": "2025-11-24"
         },
         {
@@ -569,7 +569,7 @@
          "date": "2025-12-02"
         },
         {
-         "contributionCount": 60,
+         "contributionCount": 53,
          "contributionLevel": "FIRST_QUARTILE",
          "date": "2025-12-03"
         },
@@ -954,7 +954,7 @@
          "date": "2026-02-09"
         },
         {
-         "contributionCount": 4,
+         "contributionCount": 3,
          "contributionLevel": "FIRST_QUARTILE",
          "date": "2026-02-10"
         },
@@ -2051,9 +2051,14 @@
          "date": "2026-08-25"
         },
         {
-         "contributionCount": 0,
-         "contributionLevel": "NONE",
+         "contributionCount": 4,
+         "contributionLevel": "FIRST_QUARTILE",
          "date": "2026-08-26"
+        },
+        {
+         "contributionCount": 38,
+         "contributionLevel": "FIRST_QUARTILE",
+         "date": "2026-08-27"
         }
        ]
       }
@@ -2061,7 +2066,7 @@
     }
    },
    "followers": {
-    "totalCount": 230
+    "totalCount": 229
    },
    "repositories": {
     "nodes": [
@@ -2073,7 +2078,7 @@
        "color": "#3572A5",
        "name": "Python"
       },
-      "stargazerCount": 1403
+      "stargazerCount": 1405
      },
      {
       "createdAt": "2025-01-02T12:13:56Z",
@@ -2273,6 +2278,16 @@
       "stargazerCount": 25
      },
      {
+      "createdAt": "2026-05-01T17:08:46Z",
+      "forkCount": 2,
+      "name": "proxxx",
+      "primaryLanguage": {
+       "color": "#dea584",
+       "name": "Rust"
+      },
+      "stargazerCount": 23
+     },
+     {
       "createdAt": "2025-11-24T20:35:45Z",
       "forkCount": 1,
       "name": "vibe-check",
@@ -2281,16 +2296,6 @@
        "name": "Python"
       },
       "stargazerCount": 23
-     },
-     {
-      "createdAt": "2026-05-01T17:08:46Z",
-      "forkCount": 1,
-      "name": "proxxx",
-      "primaryLanguage": {
-       "color": "#dea584",
-       "name": "Rust"
-      },
-      "stargazerCount": 22
      },
      {
       "createdAt": "2024-12-21T09:34:35Z",
@@ -2303,6 +2308,16 @@
       "stargazerCount": 20
      },
      {
+      "createdAt": "2026-04-12T14:40:19Z",
+      "forkCount": 2,
+      "name": "zion",
+      "primaryLanguage": {
+       "color": "#dea584",
+       "name": "Rust"
+      },
+      "stargazerCount": 19
+     },
+     {
       "createdAt": "2023-09-08T09:38:50Z",
       "forkCount": 4,
       "name": "dnscontrol-actions",
@@ -2311,16 +2326,6 @@
        "name": "JavaScript"
       },
       "stargazerCount": 19
-     },
-     {
-      "createdAt": "2026-04-12T14:40:19Z",
-      "forkCount": 2,
-      "name": "zion",
-      "primaryLanguage": {
-       "color": "#dea584",
-       "name": "Rust"
-      },
-      "stargazerCount": 18
      },
      {
       "createdAt": "2025-12-01T09:04:27Z",
@@ -2610,6 +2615,16 @@
       "stargazerCount": 2
      },
      {
+      "createdAt": "2026-04-16T14:40:37Z",
+      "forkCount": 0,
+      "name": "naso",
+      "primaryLanguage": {
+       "color": "#3572A5",
+       "name": "Python"
+      },
+      "stargazerCount": 2
+     },
+     {
       "createdAt": "2026-03-08T09:22:07Z",
       "forkCount": 0,
       "name": "ai-security",
@@ -2730,16 +2745,6 @@
       "createdAt": "2026-04-20T16:29:08Z",
       "forkCount": 1,
       "name": "gitoma",
-      "primaryLanguage": {
-       "color": "#3572A5",
-       "name": "Python"
-      },
-      "stargazerCount": 1
-     },
-     {
-      "createdAt": "2026-04-16T14:40:37Z",
-      "forkCount": 0,
-      "name": "naso",
       "primaryLanguage": {
        "color": "#3572A5",
        "name": "Python"
