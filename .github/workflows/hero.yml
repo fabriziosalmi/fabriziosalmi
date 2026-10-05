@@ -8,6 +8,7 @@ on:
     - cron: '17 4 * * *'      # 04:17 UTC, away from the Actions rush hour
   workflow_dispatch:
   push:
+    tags-ignore: ['**']     # a release tag is not a branch: the commit step would push to it and fail
     paths:
       - 'tools/**'
       - '.github/workflows/hero.yml'
