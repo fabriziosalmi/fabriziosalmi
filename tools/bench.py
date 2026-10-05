@@ -11,8 +11,10 @@ cost shows up as a number instead of as a feeling six months later.
 
 What is worth watching, in order:
 
-  animated    elements carrying a CSS animation. This is the runtime bill: the
-              browser recomputes style for each of them on every frame.
+  animated    elements carrying a CSS animation. This is the runtime bill while
+              the strip settles.
+  infinite    animations that never end. After settle_s seconds this is the
+              whole bill, and it should stay at one.
   filter_refs how many times a filter is switched on. Filters rasterise; they
               are the most expensive thing here and the easiest to leave on.
   gzip        what actually crosses the wire. raw is vanity.
@@ -35,12 +37,13 @@ def measure(path):
     t = open(path, encoding="utf-8").read()
     raw = t.encode()
     css = t[t.index("<style>"):t.index("</style>")]
-    body = t[t.index("</defs>"):]
+    body = t[t.index("</style>"):]
     return {
         "bytes_raw": len(raw),
         "bytes_gzip": len(gz.compress(raw, 9)),
         "elements": len(re.findall(r"<(rect|circle|path|text|line|g|use)[ >]", body)),
-        "animated": len(re.findall(r'class="', body)),
+        "animated": len(re.findall(r'style="(?:animation-delay|--d)', body)),
+        "infinite": len(re.findall(r"infinite", css)),
         "keyframes": len(re.findall(r"@keyframes ", css)),
         "rules": css.count("}.") + len(re.findall(r"\n\.", css)),
         "filters_defined": len(re.findall(r"<filter ", t)),
@@ -60,12 +63,12 @@ def git(*args, default="?"):
 def main():
     dry = "--dry" in sys.argv
     dark = measure(os.path.join(ROOT, "hero-dark.svg"))
-    geo = open(os.path.join(ROOT, "tools", "hero", "geometry.py"), encoding="utf-8").read()
-    loop = float(re.search(r"^LOOP = ([0-9.]+)", geo, re.M).group(1))
+    src = open(os.path.join(ROOT, "tools", "ticker.py"), encoding="utf-8").read()
+    settle = float(re.search(r"^SETTLE = ([0-9.]+)", src, re.M).group(1))
 
     row = {"commit": git("rev-parse", "--short", "HEAD"),
            "tag": git("describe", "--tags", "--abbrev=0", default=""),
-           "loop_s": loop, **dark}
+           "settle_s": settle, **dark}
 
     prev = None
     if os.path.exists(LOG):
@@ -74,7 +77,7 @@ def main():
             prev = json.loads(lines[-1])
 
     keys = ["bytes_raw", "bytes_gzip", "elements", "animated", "keyframes",
-            "rules", "filters_defined", "filter_refs", "loop_s"]
+            "rules", "filters_defined", "filter_refs", "infinite", "settle_s"]
     print(f"  {'':<16}{'ora':>12}{'prima':>12}{'delta':>12}")
     for k in keys:
         now = row[k]

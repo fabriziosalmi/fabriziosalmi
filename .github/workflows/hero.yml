@@ -1,7 +1,7 @@
 name: Hero
 
-# Every night: re-read the public profile data, regenerate hero-dark.svg and
-# hero-light.svg, and commit only when the drawing actually changed.
+# Every night: re-read the public profile data, regenerate the four hero SVGs
+# (wide and phone, dark and light), and commit only when the drawing actually changed.
 
 on:
   schedule:
@@ -24,6 +24,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 10      # the strip diffs against the last differing profile.json
 
       - uses: actions/setup-python@v5
         with:
@@ -34,6 +36,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python3 tools/fetch_profile.py fabriziosalmi data/profile.json
 
+      - name: Test the renderer
+        run: python3 -m unittest discover -s tools
+
       - name: Render hero
         run: python3 tools/render_hero.py data/profile.json .
 
@@ -43,12 +48,12 @@ jobs:
         run: |
           python3 - <<'EOF'
           import xml.dom.minidom, sys
-          for f in ("hero-dark.svg", "hero-light.svg"):
+          for f in ("hero-dark.svg", "hero-light.svg", "hero-m-dark.svg", "hero-m-light.svg"):
               xml.dom.minidom.parse(f)
               t = open(f, encoding="utf-8").read()
-              assert "@keyframes act0" in t, f"{f}: animations missing"
               assert "prefers-reduced-motion" in t, f"{f}: static fallback missing"
-              assert len(t) > 50_000, f"{f}: too small, {len(t)} bytes"
+              assert "contributions per week" in t and "languages" in t, f"{f}: charts missing"
+              assert 20_000 < len(t) < 150_000, f"{f}: unexpected size, {len(t)} bytes"
               print(f, "ok", len(t), "byte")
           EOF
 
@@ -57,7 +62,7 @@ jobs:
           git config user.name  'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
 
-          if git diff --quiet -- hero-dark.svg hero-light.svg; then
+          if git diff --quiet -- 'hero-*.svg'; then
             echo "drawing identical to yesterday: leaving it alone"
             exit 0
           fi
@@ -65,9 +70,9 @@ jobs:
           # GitHub serves images behind camo's cache: bumping ?v= only when the
           # drawing changes shows the new version right away, without filling the
           # history with an empty commit a day.
-          sed -i -E "s/hero-(dark|light)\.svg\?v=[0-9]+/hero-\1.svg?v=$(date -u +%Y%m%d)/g" README.md
+          sed -i -E "s/(hero-[a-z-]+\.svg\?v=)[0-9]+/\1$(date -u +%Y%m%d)/g" README.md
 
-          git add data/profile.json hero-dark.svg hero-light.svg README.md
+          git add data/profile.json hero-*.svg README.md
           git commit -m "chore(hero): regenerated from today's data"
           # actions/checkout leaves the repo on a detached HEAD, so a bare push
           # has no branch to go to. It only bites on the scheduled run: every

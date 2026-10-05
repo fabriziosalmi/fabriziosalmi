@@ -1,9 +1,11 @@
 <div align="center">
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./hero-dark.svg?v=20261005">
-  <source media="(prefers-color-scheme: light)" srcset="./hero-light.svg?v=20261005">
-  <img src="./hero-light.svg?v=20261005" alt="Fabrizio Salmi — infrastructure × security × AI agency. A replica of GitHub's contribution panel breaks apart: every square flies out and becomes a year of contributions, then 86 repositories drift past as clusters of stars — one dot per stargazer — before every square returns to its cell." width="100%">
+  <source media="(max-width: 600px) and (prefers-color-scheme: dark)" srcset="./hero-m-dark.svg?v=2026100502">
+  <source media="(max-width: 600px) and (prefers-color-scheme: light)" srcset="./hero-m-light.svg?v=2026100502">
+  <source media="(prefers-color-scheme: dark)" srcset="./hero-dark.svg?v=2026100502">
+  <source media="(prefers-color-scheme: light)" srcset="./hero-light.svg?v=2026100502">
+  <img src="./hero-light.svg?v=2026100502" alt="Fabrizio Salmi — profile data, regenerated every night from the public GitHub API: repositories, stars, forks, followers, contributions per week and languages." width="100%">
 </picture>
 
 <p><em>"I am not a coder."</em></p>
