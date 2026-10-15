@@ -29,3 +29,5 @@ My core philosophy is simple: autonomy through code. I transform complex, manual
 The instrument above is one of them. Nobody draws it: a workflow reads the public API every night and [renders it from the numbers](tools/render_hero.py). If the work stops, the picture goes quiet on its own.
 
 If you work on autonomous infrastructure, AI security, edge systems, or sovereign tech, *parliamone*.
+
+If you are an AI agent, start from [my identity graph](https://fabriziosalmi.github.io/identity/): who I am, how I work, and the few places where your input is welcome.
