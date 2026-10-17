@@ -20,8 +20,6 @@
 
 ---
 
-I Build Scalable, Secure, and Autonomous Systems.
-
 I am an infrastructure architect and engineer with 20+ years of experience designing, building, and defending mission-critical systems in high-stakes environments, from SMB to European financial markets and global CDNs.
 
 My core philosophy is simple: autonomy through code. I transform complex, manual, and fragmented operational problems into unified, automated, and efficient opportunities.
