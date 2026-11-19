@@ -1,11 +1,11 @@
 <div align="center">
 
 <picture>
-  <source media="(max-width: 600px) and (prefers-color-scheme: dark)" srcset="./hero-m-dark.svg?v=20261118">
-  <source media="(max-width: 600px) and (prefers-color-scheme: light)" srcset="./hero-m-light.svg?v=20261118">
-  <source media="(prefers-color-scheme: dark)" srcset="./hero-dark.svg?v=20261118">
-  <source media="(prefers-color-scheme: light)" srcset="./hero-light.svg?v=20261118">
-  <img src="./hero-light.svg?v=20261118" alt="Fabrizio Salmi — profile data, regenerated every night from the public GitHub API: repositories, stars, forks, followers, contributions per week and languages." width="100%">
+  <source media="(max-width: 600px) and (prefers-color-scheme: dark)" srcset="./hero-m-dark.svg?v=20261119">
+  <source media="(max-width: 600px) and (prefers-color-scheme: light)" srcset="./hero-m-light.svg?v=20261119">
+  <source media="(prefers-color-scheme: dark)" srcset="./hero-dark.svg?v=20261119">
+  <source media="(prefers-color-scheme: light)" srcset="./hero-light.svg?v=20261119">
+  <img src="./hero-light.svg?v=20261119" alt="Fabrizio Salmi — profile data, regenerated every night from the public GitHub API: repositories, stars, forks, followers, contributions per week and languages." width="100%">
 </picture>
 
 <p><em>"I am not a coder."</em></p>
